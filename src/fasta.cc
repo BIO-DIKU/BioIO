@@ -1,4 +1,4 @@
-#include "Fasta.h"
+#include <BioIO/fasta.h>
 
 #include <string>
 #include <vector>

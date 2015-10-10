@@ -18,27 +18,5 @@
  * http://www.gnu.org/copyleft/gpl.html
  */
 
-#include <BioIO/seq_entry.h>
-
-SeqEntry::SeqEntry() : type_(SeqType::nucleotide) {
-}
-
-SeqEntry::SeqEntry(
-    const std::string& name, 
-    const std::string& sequence,
-    const std::vector<uint8_t>& scores, 
-    SeqEntry::SeqType sequence_type
-    )
-  : 
-    name_(name),
-    seq_(sequence),
-    scores_(scores),
-    type_(sequence_type) 
-{
-
-}
-
-SeqEntry SeqEntry::SubSeq(int i, int len) const 
-{
-  return SeqEntry(name(), seq().substr(i, len), scores(), type());
-}
+#define CATCH_CONFIG_MAIN
+#include "catch.hpp"
