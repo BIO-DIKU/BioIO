@@ -6,13 +6,9 @@ cmake_minimum_required (VERSION 2.8)
 project(BioIO)
 
 
-# Options
+# Default options
 # ------------------------
 # Change default install path
-if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-    set(CMAKE_INSTALL_PREFIX "${PROJECT_SOURCE_DIR}/bin" CACHE PATH "default install path" FORCE)
-endif()
-
 if (NOT CMAKE_BUILD_TYPE)
    set(CMAKE_BUILD_TYPE Release)
 endif()
@@ -41,18 +37,36 @@ elseif (${CMAKE_CXX_COMPILER_ID} STREQUAL "MSVC")
 endif()
 
 
-# Executable
+# Files in project
 # ------------------------
-FILE(GLOB SOURCE_FILES src/*.cc src/modules/*.cc)
-FILE(GLOB HEADER_FILES src/*.h src/modules/*.h)
+FILE(GLOB SOURCE_FILES src/*.cc src/*.h)
+FILE(GLOB INCLUDE_FILES include/BioIO/*.h)
 
-add_executable(${PROJECT_NAME} ${SOURCE_FILES} ${HEADER_FILES})
+FILE(GLOB TEST_FILES test/*.cc)
 
 
-# Build tests if CMAKE_BUILD_TYPE=Debug is set
+# Include and build library
 # ------------------------
-if (CMAKE_BUILD_TYPE MATCHES DEBUG OR CMAKE_BUILD_TYPE MATCHES "Debug")
-    include_directories(${CATCH_INCLUDE_PATH})
-    FILE(GLOB TEST_FILES test/*.cc test/modules/*.cc)
-    add_executable("${PROJECT_NAME}-test" ${TEST_FILES})
-endif()
+include_directories("${PROJECT_SOURCE_DIR}/include")
+add_library(${PROJECT_NAME} ${SOURCE_FILES} ${INCLUDE_FILES})
+
+
+# Build executable (tests) and link library
+# ------------------------
+add_executable("${PROJECT_NAME}-test" ${TEST_FILES})
+target_link_libraries("${PROJECT_NAME}-test" ${PROJECT_NAME})
+
+
+# make build types
+# ------------------------
+ADD_CUSTOM_TARGET(debug
+  COMMAND ${CMAKE_COMMAND} -DCMAKE_BUILD_TYPE=Debug ${CMAKE_SOURCE_DIR}
+  COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --target all
+  COMMENT "Switch CMAKE_BUILD_TYPE to Debug"
+  )
+
+ADD_CUSTOM_TARGET(release
+  COMMAND ${CMAKE_COMMAND} -DCMAKE_BUILD_TYPE=Release ${CMAKE_SOURCE_DIR}
+  COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --target all
+  COMMENT "Switch CMAKE_BUILD_TYPE to Release"
+  )
