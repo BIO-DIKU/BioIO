@@ -32,9 +32,9 @@ class SeqEntry {
     };
 
     SeqEntry();
-    SeqEntry(const std::string& name, 
+    SeqEntry(const std::string& name,
              const std::string& sequence,
-             const std::vector<uint8_t>& scores, 
+             const std::vector<uint8_t>& scores,
              SeqEntry::SeqType sequence_type );
 
     /*
@@ -42,7 +42,7 @@ class SeqEntry {
      * SeqEntry object it is called on, starting at the given index and of
      * the given length.
      */
-    SeqEntry SubSeq(int i, int len) const;
+    SeqEntry SubSeq(size_t i, size_t len) const;
 
     // accessors
     const std::string& name() const { return name_; }
