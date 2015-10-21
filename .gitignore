@@ -27,8 +27,8 @@
 *.i*86
 *.x86_64
 *.hex
-klust
-klust-test
+BioIO
+BioIO-test
 
 # CLion
 .idea/
