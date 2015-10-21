@@ -24,21 +24,21 @@ SeqEntry::SeqEntry() : type_(SeqType::nucleotide) {
 }
 
 SeqEntry::SeqEntry(
-    const std::string& name, 
+    const std::string& name,
     const std::string& sequence,
-    const std::vector<uint8_t>& scores, 
+    const std::vector<uint8_t>& scores,
     SeqEntry::SeqType sequence_type
     )
-  : 
+  :
     name_(name),
     seq_(sequence),
     scores_(scores),
-    type_(sequence_type) 
+    type_(sequence_type)
 {
 
 }
 
-SeqEntry SeqEntry::SubSeq(int i, int len) const 
+SeqEntry SeqEntry::SubSeq(size_t i, size_t len) const 
 {
   return SeqEntry(name(), seq().substr(i, len), scores(), type());
 }
