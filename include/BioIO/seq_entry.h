@@ -24,6 +24,9 @@
 #include <string>
 #include <vector>
 
+/**
+ * 
+ */
 class SeqEntry {
   public:
     enum class SeqType {
@@ -31,11 +34,39 @@ class SeqEntry {
       protein
     };
 
+    /**
+     * Default constructor.
+     * Sequence Type defaults to nucleotide.
+     */
     SeqEntry();
+
+    /**
+     * Constructor.
+     * Input:
+     *    Name of sequence (note this is not the comment)
+     *    Sequence
+     *    Scores (implemented as vector, which is subject to change)
+     *    Sequence Type (see enum class SeqType)
+     */
     SeqEntry(const std::string& name,
              const std::string& sequence,
              const std::vector<uint8_t>& scores,
-             SeqEntry::SeqType sequence_type );
+             SeqEntry::SeqType sequence_type);
+
+    /**
+     * Copy constructor.
+     */
+    SeqEntry(const SeqEntry& other);
+
+    /**
+     * Move constructor.
+     */
+    SeqEntry(SeqEntry&& other);
+
+    /**
+     * Copy operator.
+     */
+    SeqEntry& operator=(const SeqEntry& other);
 
     /*
      * Returns a SeqEntry containing the (consecutive) subsequence of the
@@ -44,17 +75,60 @@ class SeqEntry {
      */
     SeqEntry SubSeq(size_t i, size_t len) const;
 
-    // accessors
-    const std::string& name() const { return name_; }
-    const std::string& seq() const { return seq_; }
-    const std::vector<uint8_t>& scores() const { return scores_; }
-    SeqType type() const { return type_; }
+    /**
+     * @return Reference to name
+     */
+    std::string& name();
 
-    // mutators
-    void set_name(const std::string& name) { name_ = name; }
-    void set_seq(const std::string& sequence) { seq_ = sequence; }
-    void set_scores(const std::vector<uint8_t>& scores) { scores_ = scores; }
-    void set_type(SeqType type) { type_ = type; }
+    /**
+     * @return Reference to const name
+     */
+    const std::string& name() const;
+
+    /**
+     * @return Reference to sequence
+     */
+    std::string& seq();
+
+    /**
+     * @return Reference to const sequence
+     */
+    const std::string& seq() const;
+
+    /**
+     * @return Reference to vector of scores
+     */
+    std::vector<uint8_t>& scores();
+
+    /**
+     * @return Reference to const vector of scores
+     */
+    const std::vector<uint8_t>& scores() const;
+
+    /**
+     * @return Reference to sequence type
+     */
+    SeqType type() const;
+
+    /**
+     * @param Sequence name
+     */
+    void set_name(const std::string& name);
+
+    /**
+     * @param Sequence
+     */
+    void set_seq(const std::string& sequence);
+
+    /**
+     * @param Sequence scores
+     */
+    void set_scores(const std::vector<uint8_t>& scores);
+
+    /**
+     * @param Sequence type
+     */
+    void set_type(SeqType type);
 
   private:
     std::string name_;
