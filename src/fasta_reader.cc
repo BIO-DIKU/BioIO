@@ -22,6 +22,7 @@
 
 #include <sstream>
 #include <algorithm>
+#include <iostream>
 
 FastaReader::FastaReader(const std::string& filePath, int errorToleranceFlags) :
   m_errorToleranceFlags(errorToleranceFlags)
@@ -34,7 +35,7 @@ FastaReader::FastaReader(const std::string& filePath, int errorToleranceFlags) :
   }
 
   // Read until eof or the first header is located
-  while (std::getline(m_inputStream, m_nextHeader)) {
+  while (windowsSafeGetLine(m_inputStream, m_nextHeader)) {
     if (m_nextHeader.empty()) continue;  // Ignore empty lines
 
     if (m_nextHeader.at(0) == '>') {
@@ -71,7 +72,7 @@ std::unique_ptr<SeqEntry> FastaReader::nextEntry() {
 
   seqPtr->name() = m_nextHeader;
 
-  while (std::getline(m_inputStream, m_nextHeader)) {
+  while (windowsSafeGetLine(m_inputStream, m_nextHeader)) {
     if (m_nextHeader.length() == 0) continue;  // Ignore empty lines
 
     if (m_nextHeader.at(0) == '>') {
@@ -108,4 +109,14 @@ std::unique_ptr<SeqEntry> FastaReader::nextEntry() {
 
 bool FastaReader::hasNextEntry() const {
   return !m_inputStream.eof();
+}
+
+std::istream& FastaReader::windowsSafeGetLine(std::istream& is, std::string& str) {
+  std::getline(is, str);
+
+  // handle evil windows line endings
+  if (str.back() == '\r')
+    m_nextHeader.pop_back();
+
+  return is;
 }

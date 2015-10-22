@@ -25,6 +25,7 @@
 #include <memory>
 #include <fstream>
 #include <exception>
+#include <iostream>
 
 #include <BioIO/seq_entry.h>
 
@@ -68,6 +69,8 @@ class FastaReader
     std::ifstream m_inputStream;
     std::string m_nextHeader;
     int m_errorToleranceFlags;
+
+    std::istream& windowsSafeGetLine(std::istream& is, std::string& str);
 };
 
 #endif  // BIOIO_FASTA_READER_H_
