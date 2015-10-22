@@ -20,8 +20,10 @@
 
 #include <BioIO/fasta_reader.h>
 
-FastaReader::FastaReader(const std::string& filePath, int errorToleranceLevel) :
-  m_errorToleranceLevel(errorToleranceLevel)
+#include <sstream>
+
+FastaReader::FastaReader(const std::string& filePath, int errorToleranceFlags) :
+  m_errorToleranceFlags(errorToleranceFlags)
 {
   m_inputStream.open(filePath, std::ifstream::in);
 
@@ -35,7 +37,10 @@ FastaReader::FastaReader(const std::string& filePath, int errorToleranceLevel) :
     if (m_nextHeader.empty()) continue;  // Ignore empty lines
 
     if (m_nextHeader.at(0) == '>') {
+      m_nextHeader = m_nextHeader.substr(1);
       break;
+    } else if (m_errorToleranceFlags & IgnoreContentBeforeFirstHeader) {
+      continue;
     } else {
       std::string msg("Bad FASTA format: Contents before first header. Line: \"" +
         m_nextHeader + "\"");
@@ -50,7 +55,36 @@ FastaReader::~FastaReader() {
 
 std::unique_ptr<SeqEntry> FastaReader::nextEntry() {
   std::unique_ptr<SeqEntry> seqPtr(new SeqEntry());
+  std::stringstream ss;
 
+  if (m_nextHeader.empty()) {
+    std::string msg("Bad FASTA format: Empty header.");
+    throw FastaException(msg);
+  }
+
+  seqPtr->name() = m_nextHeader;
+
+  while (std::getline(m_inputStream, m_nextHeader)) {
+    if (m_nextHeader.length() == 0) continue;  // Ignore empty lines
+
+    if (m_nextHeader.at(0) == '>') {
+      m_nextHeader = m_nextHeader.substr(1);
+      break;
+    } else {
+      ss << m_nextHeader;
+    }
+  }
+
+  seqPtr->seq() = ss.str();
+
+  if (seqPtr->seq().empty()) {
+    std::string msg("Bad FASTA format: Missing sequence for header \"" + m_nextHeader + "\"");
+    throw FastaException(msg);
+  }
 
   return seqPtr;
+}
+
+bool FastaReader::hasNextEntry() const {
+  return !m_inputStream.eof();
 }

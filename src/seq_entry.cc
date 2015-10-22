@@ -20,8 +20,8 @@
 
 #include <BioIO/seq_entry.h>
 
-SeqEntry::SeqEntry() :
-    type_(SeqType::nucleotide)
+SeqEntry::SeqEntry(SeqEntry::SeqType sequence_type) :
+    type_(sequence_type)
 {}
 
 SeqEntry::SeqEntry(const std::string& name,

@@ -38,7 +38,7 @@ class SeqEntry {
      * Default constructor.
      * Sequence Type defaults to nucleotide.
      */
-    SeqEntry();
+    SeqEntry(SeqEntry::SeqType sequence_type = SeqEntry::SeqType::nucleotide);
 
     /**
      * Constructor.

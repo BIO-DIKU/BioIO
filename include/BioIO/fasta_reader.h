@@ -42,6 +42,9 @@ class FastaException : public std::exception {
 class FastaReader
 {
   public:
+    const uint8_t IgnoreContentBeforeFirstHeader = 0x01;
+
+  public:
     FastaReader(const FastaReader&) = delete;
     FastaReader& operator=(const FastaReader&) = delete;
     FastaReader(FastaReader&& other) = delete;
@@ -52,10 +55,12 @@ class FastaReader
 
     std::unique_ptr<SeqEntry> nextEntry();
 
+    bool hasNextEntry() const;
+
   private:
     std::ifstream m_inputStream;
     std::string m_nextHeader;
-    int m_errorToleranceLevel;
+    int m_errorToleranceFlags;
 };
 
 #endif  // BIOIO_FASTA_READER_H_
