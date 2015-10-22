@@ -40,7 +40,7 @@ FastaReader::FastaReader(const std::string& filePath, int errorToleranceFlags) :
     if (m_nextHeader.at(0) == '>') {
       break;
     } else if (m_errorToleranceFlags & IgnoreContentBeforeFirstHeader) {
-      continue;
+      //continue;
     } else {
       std::string msg("Bad FASTA format: Contents before first header. Line: \"" +
         m_nextHeader + "\"");
@@ -48,7 +48,7 @@ FastaReader::FastaReader(const std::string& filePath, int errorToleranceFlags) :
     }
   }
 
-  if(m_nextHeader.empty()) {
+  if(m_nextHeader.at(0) != '>') {
     std::string msg("Bad FASTA format: No header found.");
     throw FastaException(msg, 5);
   }

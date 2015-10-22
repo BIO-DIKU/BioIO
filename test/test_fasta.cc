@@ -161,6 +161,42 @@ TEST_CASE("read 9 fasta files", "[fasta_reader]") {
   }
 }
 
+#include <string>
+#include <memory>
+#include <fstream>
+#include <exception>
+#include <iostream>
+#include <algorithm>
+
+TEST_CASE("fasta file with windows line-endings", "[fasta_reader]") {
+  /*std::ifstream inputStream;
+  inputStream.open("../test/fasta_files/test2_cr.fasta", std::ifstream::in);
+  std::string str;
+  while(std::getline(inputStream, str)) {
+    std::cout << str << std::endl;
+  }
+  std::cout << std::isspace('\r') << std::isspace('\n') << std::endl;
+  inputStream.close();*/
+
+  SECTION("Test file test2_cr.fasta") {
+    FastaReader reader("../test/fasta_files/test2_cr.fasta", FastaReader::IgnoreContentBeforeFirstHeader);
+
+    REQUIRE(reader.hasNextEntry() == true);
+
+    auto entry1 = reader.nextEntry();
+    REQUIRE(entry1->name() == "1");
+    REQUIRE(entry1->seq() == "atcgATCG");
+
+    REQUIRE(reader.hasNextEntry() == true);
+
+    auto entry2 = reader.nextEntry();
+    REQUIRE(entry2->name() == "2");
+    REQUIRE(entry2->seq() == "atcg");
+
+    REQUIRE(reader.hasNextEntry() == false);
+  }
+}
+
 TEST_CASE("fasta reader exceptions", "[fasta_reader]") {
   SECTION("Test with non-existing file") {
     try {
