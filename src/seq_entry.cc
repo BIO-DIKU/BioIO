@@ -48,6 +48,9 @@ SeqEntry::SeqEntry(SeqEntry&& other) :
     type_(std::move(other.type_))
 {}
 
+SeqEntry::~SeqEntry() {
+}
+
 SeqEntry& SeqEntry::operator=(const SeqEntry& other) {
     if(this != &other) {
         name_ = other.name_;

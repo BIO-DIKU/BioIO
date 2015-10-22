@@ -42,11 +42,10 @@ class SeqEntry {
 
     /**
      * Constructor.
-     * Input:
-     *    Name of sequence (note this is not the comment)
-     *    Sequence
-     *    Scores (implemented as vector, which is subject to change)
-     *    Sequence Type (see enum class SeqType)
+     * @param Name of sequence (note this is not the comment)
+     * @param Sequence
+     * @param Scores (implemented as vector, which is subject to change)
+     * @param Sequence Type (see enum class SeqType)
      */
     SeqEntry(const std::string& name,
              const std::string& sequence,
@@ -62,6 +61,8 @@ class SeqEntry {
      * Move constructor.
      */
     SeqEntry(SeqEntry&& other);
+
+    virtual ~SeqEntry();
 
     /**
      * Copy operator.
