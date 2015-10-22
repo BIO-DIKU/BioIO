@@ -44,9 +44,9 @@ class FastaReader
   public:
     FastaReader(const FastaReader&) = delete;
     FastaReader& operator=(const FastaReader&) = delete;
+    FastaReader(FastaReader&& other) = delete;
 
     FastaReader(const std::string& filePath, int errorToleranceLevel = 0);
-    FastaReader(FastaReader&& other);
 
     virtual ~FastaReader();
 

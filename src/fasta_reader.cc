@@ -31,7 +31,7 @@ FastaReader::FastaReader(const std::string& filePath, int errorToleranceLevel) :
   }
 
   // Read until eof or the first header is located
-  while (std::getline(inputStream, m_nextHeader)) {
+  while (std::getline(m_inputStream, m_nextHeader)) {
     if (m_nextHeader.empty()) continue;  // Ignore empty lines
 
     if (m_nextHeader.at(0) == '>') {
@@ -44,18 +44,13 @@ FastaReader::FastaReader(const std::string& filePath, int errorToleranceLevel) :
   }
 }
 
-FastaReader::FastaReader(FastaReader&& other) :
-  m_inputStream(std::move(other.m_inputStream)),
-  m_errorToleranceLevel(std::move(other.m_errorToleranceLevel))
-{}
-
 FastaReader::~FastaReader() {
   m_inputStream.close();
 }
 
 std::unique_ptr<SeqEntry> FastaReader::nextEntry() {
   std::unique_ptr<SeqEntry> seqPtr(new SeqEntry());
-  
+
 
   return seqPtr;
 }

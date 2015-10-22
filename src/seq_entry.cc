@@ -62,7 +62,7 @@ SeqEntry& SeqEntry::operator=(const SeqEntry& other) {
 }
 
 SeqEntry SeqEntry::SubSeq(size_t i, size_t len) const {
-  return SeqEntry(name_(), seq_().substr(i, len), scores_(), type_());
+  return SeqEntry(name_, seq_.substr(i, len), scores_, type_);
 }
 
 std::string& SeqEntry::name() {
@@ -89,7 +89,7 @@ const std::vector<uint8_t>& SeqEntry::scores() const {
     return scores_;
 }
 
-SeqType SeqEntry::type() const {
+SeqEntry::SeqType SeqEntry::type() const {
     return type_;
 }
 
@@ -98,7 +98,7 @@ void SeqEntry::set_name(const std::string& name) {
 }
 
 void SeqEntry::set_seq(const std::string& sequence) {
-    seq_ = seq;
+    seq_ = sequence;
 }
 
 void SeqEntry::set_scores(const std::vector<uint8_t>& scores) {

@@ -109,7 +109,7 @@ class SeqEntry {
     /**
      * @return Reference to sequence type
      */
-    SeqType type() const;
+    SeqEntry::SeqType type() const;
 
     /**
      * @param Sequence name
