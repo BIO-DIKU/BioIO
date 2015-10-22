@@ -40,6 +40,8 @@ class FastaException : public std::exception {
     FastaException(FastaException&& e) :
       exceptionMsg(std::move(e.exceptionMsg)), errorCode(e.errorCode) {}
 
+    virtual const char* what() const throw() { return exceptionMsg.c_str(); }
+
     const std::string exceptionMsg;
     int errorCode; // Mostly used for tests
 };

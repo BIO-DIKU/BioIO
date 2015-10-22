@@ -21,6 +21,7 @@
 #include <BioIO/fasta_reader.h>
 
 #include <sstream>
+#include <algorithm>
 
 FastaReader::FastaReader(const std::string& filePath, int errorToleranceFlags) :
   m_errorToleranceFlags(errorToleranceFlags)
@@ -29,7 +30,7 @@ FastaReader::FastaReader(const std::string& filePath, int errorToleranceFlags) :
 
   if (!m_inputStream.good()) {
     std::string msg("FASTA file not found or not readable: " + filePath);
-    throw FastaException(msg);
+    throw FastaException(msg, 1);
   }
 
   // Read until eof or the first header is located
@@ -37,16 +38,22 @@ FastaReader::FastaReader(const std::string& filePath, int errorToleranceFlags) :
     if (m_nextHeader.empty()) continue;  // Ignore empty lines
 
     if (m_nextHeader.at(0) == '>') {
-      m_nextHeader = m_nextHeader.substr(1);
       break;
     } else if (m_errorToleranceFlags & IgnoreContentBeforeFirstHeader) {
       continue;
     } else {
       std::string msg("Bad FASTA format: Contents before first header. Line: \"" +
         m_nextHeader + "\"");
-      throw FastaException(msg);
+      throw FastaException(msg, 2);
     }
   }
+
+  if(m_nextHeader.empty()) {
+    std::string msg("Bad FASTA format: No header found.");
+    throw FastaException(msg, 5);
+  }
+  
+  m_nextHeader = m_nextHeader.substr(1);
 }
 
 FastaReader::~FastaReader() {
@@ -59,7 +66,7 @@ std::unique_ptr<SeqEntry> FastaReader::nextEntry() {
 
   if (m_nextHeader.empty()) {
     std::string msg("Bad FASTA format: Empty header.");
-    throw FastaException(msg);
+    throw FastaException(msg, 3);
   }
 
   seqPtr->name() = m_nextHeader;
@@ -77,9 +84,23 @@ std::unique_ptr<SeqEntry> FastaReader::nextEntry() {
 
   seqPtr->seq() = ss.str();
 
+  seqPtr->seq().erase(
+    std::remove_if(
+      seqPtr->seq().begin(),
+      seqPtr->seq().end(),
+      [](char ch) {
+        return std::isspace<char>(
+          ch,
+          std::locale::classic()
+        );
+      }
+    ),
+    seqPtr->seq().end()
+  );
+
   if (seqPtr->seq().empty()) {
     std::string msg("Bad FASTA format: Missing sequence for header \"" + m_nextHeader + "\"");
-    throw FastaException(msg);
+    throw FastaException(msg, 4);
   }
 
   return seqPtr;
