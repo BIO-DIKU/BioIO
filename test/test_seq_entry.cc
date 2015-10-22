@@ -20,7 +20,7 @@
 
 #include "catch.hpp"
 
-#include "../src/seq_entry.cc"
+#include <BioIO/bioio.h>
 
 TEST_CASE("sequences can be constructed, copied and moved", "[sequence]") {
   SeqEntry t1;

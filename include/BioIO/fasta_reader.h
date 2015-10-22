@@ -33,16 +33,21 @@
  */
 class FastaException : public std::exception {
   public:
-    FastaException(std::string &msg): exceptionMsg(msg) {}
-    FastaException(std::string &&msg): exceptionMsg(msg) {}
-    FastaException(const FastaException &e): exceptionMsg(e.exceptionMsg) {}
+    FastaException(const std::string& msg, int code = 0) :
+      exceptionMsg(msg), errorCode(code) {}
+    FastaException(const FastaException& e) :
+      exceptionMsg(e.exceptionMsg), errorCode(e.errorCode) {}
+    FastaException(FastaException&& e) :
+      exceptionMsg(std::move(e.exceptionMsg)), errorCode(e.errorCode) {}
+
     const std::string exceptionMsg;
+    int errorCode; // Mostly used for tests
 };
 
 class FastaReader
 {
   public:
-    const uint8_t IgnoreContentBeforeFirstHeader = 0x01;
+    static const uint8_t IgnoreContentBeforeFirstHeader = 0x01;
 
   public:
     FastaReader(const FastaReader&) = delete;
