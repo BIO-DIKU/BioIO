@@ -56,6 +56,13 @@ add_library(${PROJECT_NAME} ${SOURCE_FILES} ${INCLUDE_FILES})
 add_executable("${PROJECT_NAME}-test" ${TEST_FILES})
 target_link_libraries("${PROJECT_NAME}-test" ${PROJECT_NAME})
 
+# Copy fasta test files to build folder
+# ------------------------
+set(MY_TEST_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/fasta_test_files")
+file(MAKE_DIRECTORY ${MY_TEST_DIRECTORY})
+file(GLOB FAST_TEST_FILES test/fasta_files/*.fasta)
+file(COPY ${FAST_TEST_FILES} DESTINATION ${MY_TEST_DIRECTORY})
+
 
 # make build types
 # ------------------------

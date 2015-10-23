@@ -51,3 +51,6 @@ cmake_install.cmake
 # Ctags
 .tags*
 tags
+
+# Project specific
+/fasta_test_files
