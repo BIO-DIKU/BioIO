@@ -1,9 +1,10 @@
-SILVA_FTP=ftp://ftp.arb-silva.de/release_123/Exports/SILVA_123_SSURef_tax_silva_trunc.fasta.gz
-SILVA_LOCAL=silva/$(notdir $(SILVA_FTP))
-SILVA_UNPACKED=$(subst .gz,,$(SILVA_LOCAL))
+SILVA_FTP      = ftp://ftp.arb-silva.de/release_123/Exports/SILVA_123_SSURef_tax_silva_trunc.fasta.gz
+SILVA_LOCAL    = silva/$(notdir $(SILVA_FTP))
+SILVA_UNPACKED = $(subst .gz,,$(SILVA_LOCAL))
 
-all: $(SILVA_UNPACKED)
+SEQTK_GIT      = https://github.com/lh3/seqtk.git
 
+all: $(SILVA_UNPACKED) seqtk
 
 $(SILVA_LOCAL): 
 	mkdir -p silva
@@ -12,6 +13,11 @@ $(SILVA_LOCAL):
 $(SILVA_UNPACKED): $(SILVA_LOCAL)
 	gunzip -k $(SILVA_LOCAL)
 
+seqtk:
+	git clone $(SEQTK_GIT) $@ 
+	cd $@ && make
+
+
 clean:
-	rm -f $(SILVA_UNPACKED)
+	rm -rf $(SILVA_UNPACKED) seqtk
 	@echo "Make refrained from removing $(SILVA_LOCAL). Remove this manually"
