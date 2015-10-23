@@ -20,6 +20,8 @@
 
 #include <BioIO/seq_entry.h>
 
+#include <ostream>
+
 SeqEntry::SeqEntry(SeqEntry::SeqType sequence_type) :
   type_(sequence_type)
 {}
@@ -115,4 +117,8 @@ void SeqEntry::set_scores(const std::vector<uint8_t>& scores) {
 
 void SeqEntry::set_type(SeqType type) {
   type_ = type;
+}
+
+std::ostream& operator<< (std::ostream& o, const SeqEntry& sequence) {
+  return o << '>' << sequence.name_ << '\n' << sequence.seq_;
 }
