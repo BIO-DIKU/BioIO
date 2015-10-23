@@ -50,6 +50,7 @@ class FastqReader
 
   private:
     std::ifstream m_inputStream;
+    std::string m_nextHeader;
     int m_errorToleranceFlags;
 };
 

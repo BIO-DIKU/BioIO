@@ -29,6 +29,19 @@ FastqReader::FastqReader(const std::string& filePath, int errorToleranceFlags) :
     std::string msg("FASTQ file not found or not readable: " + filePath);
     throw FastaException(msg, 1);
   }
+
+  // Read until eof or the first header is located
+  while (windowsSafeGetLine(m_inputStream, m_nextHeader)) {
+    if (m_nextHeader.empty()) continue;  // Ignore empty lines
+
+    if (m_nextHeader.at(0) == '@') {
+      break;
+    } else {
+      std::string msg("Bad FASTQ format: Contents before first header. Line: \"" +
+        m_nextHeader + "\"");
+      throw FastaException(msg, 2);
+    }
+  }
 }
 
 FastqReader::~FastqReader() {
@@ -38,14 +51,12 @@ FastqReader::~FastqReader() {
 std::unique_ptr<SeqEntry> FastqReader::nextEntry() {
   std::unique_ptr<SeqEntry> seqPtr(new SeqEntry());
 
-  if(!windowsSafeGetLine(m_inputStream, seqPtr->name())) {
-    std::string msg("FASTQ file ended unexpectedly when attempting to read header.");
-    throw FastaException(msg, 2);
-  }
-  if (seqPtr->name().at(0) != '@') {
-    std::string msg("Bad FASTQ format: Expected header, found: " + seqPtr->name());
+  if (m_nextHeader.empty()) {
+    std::string msg("Bad FASTQ format: Empty header.");
     throw FastaException(msg, 3);
   }
+
+  seqPtr->name() = m_nextHeader;
 
   if(!windowsSafeGetLine(m_inputStream, seqPtr->seq())) {
     std::string msg("FASTQ file ended unexpectedly when attempting to read sequence.");
@@ -57,7 +68,7 @@ std::unique_ptr<SeqEntry> FastqReader::nextEntry() {
     std::string msg("FASTQ file ended unexpectedly when attempting to read comment.");
     throw FastaException(msg, 5);
   }
-  if (seqPtr->name().at(0) != '+') {
+  if (comment.at(0) != '+') {
     std::string msg("Bad FASTQ format: Expected comment, found: " + comment);
     throw FastaException(msg, 6);
   }
@@ -72,6 +83,18 @@ std::unique_ptr<SeqEntry> FastqReader::nextEntry() {
   if(quality.size() != seqSize) {
     std::string msg("Bad FASTQ format: Seqence and sequence quality does not have the same length.");
     throw FastaException(msg, 8);
+  }
+
+  while (windowsSafeGetLine(m_inputStream, m_nextHeader)) {
+    if (m_nextHeader.empty()) continue;  // Ignore empty lines
+
+    if (m_nextHeader.at(0) == '@') {
+      break;
+    } else {
+      std::string msg("Bad FASTQ format: Contents before next header. Line: \"" +
+        m_nextHeader + "\"");
+      throw FastaException(msg, 2);
+    }
   }
 
   seqPtr->scores().reserve(seqSize);
