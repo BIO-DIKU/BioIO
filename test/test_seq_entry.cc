@@ -134,5 +134,5 @@ TEST_CASE("write SeqEntry", "[sequence]") {
 
   ss << t1;
 
-  REQUIRE(ss.str() == ">Name\nSequence\n");
+  REQUIRE(ss.str() == ">Name\nSequence");
 }

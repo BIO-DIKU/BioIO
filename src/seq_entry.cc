@@ -120,6 +120,5 @@ void SeqEntry::set_type(SeqType type) {
 }
 
 std::ostream& operator<< (std::ostream& o, const SeqEntry& sequence) {
-  o << '>' << sequence.name_ << std::endl;
-  return o << sequence.seq_ << std::endl;
+  return o << '>' << sequence.name_ << '\n' << sequence.seq_;
 }
