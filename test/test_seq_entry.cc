@@ -20,7 +20,9 @@
 
 #include "catch.hpp"
 
+#include <ostream>
 #include <vector>
+#include <sstream>
 #include <BioIO/bioio.h>
 
 TEST_CASE("sequences can be constructed, copied and moved", "[sequence]") {
@@ -123,4 +125,14 @@ TEST_CASE("subsequences can be extracted from sequences", "[sequence]") {
     REQUIRE(t2.scores() == newVec);
     REQUIRE(t2.type() == SeqEntry::SeqType::nucleotide);
   }
+}
+
+TEST_CASE("write SeqEntry", "[sequence]") {
+  SeqEntry t1 = SeqEntry("Name", "Sequence", {}, SeqEntry::SeqType::nucleotide);
+
+  std::stringstream ss;
+
+  ss << t1;
+
+  REQUIRE(ss.str() == ">Name\nSequence\n");
 }
