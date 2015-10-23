@@ -53,7 +53,7 @@ FastaReader::FastaReader(const std::string& filePath, int errorToleranceFlags) :
     std::string msg("Bad FASTA format: No header found.");
     throw FastaException(msg, 5);
   }
-  
+
   m_nextHeader = m_nextHeader.substr(1);
 }
 
@@ -112,11 +112,11 @@ bool FastaReader::hasNextEntry() const {
 }
 
 std::istream& FastaReader::windowsSafeGetLine(std::istream& is, std::string& str) {
-  std::getline(is, str);
+  std::istream& ret = std::getline(is, str);
 
   // handle evil windows line endings
   if (str.back() == '\r')
     m_nextHeader.pop_back();
 
-  return is;
+  return ret;
 }
