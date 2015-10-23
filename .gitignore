@@ -27,8 +27,8 @@
 *.i*86
 *.x86_64
 *.hex
-klust
-klust-test
+BioIO
+BioIO-test
 
 # CLion
 .idea/
@@ -51,3 +51,6 @@ cmake_install.cmake
 # Ctags
 .tags*
 tags
+
+# Project specific
+/fasta_test_files

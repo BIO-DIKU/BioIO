@@ -6,13 +6,9 @@ cmake_minimum_required (VERSION 2.8)
 project(BioIO)
 
 
-# Options
+# Default options
 # ------------------------
 # Change default install path
-if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-    set(CMAKE_INSTALL_PREFIX "${PROJECT_SOURCE_DIR}/bin" CACHE PATH "default install path" FORCE)
-endif()
-
 if (NOT CMAKE_BUILD_TYPE)
    set(CMAKE_BUILD_TYPE Release)
 endif()
@@ -41,30 +37,43 @@ elseif (${CMAKE_CXX_COMPILER_ID} STREQUAL "MSVC")
 endif()
 
 
-# Find Catch
+# Files in project
 # ------------------------
-FIND_PATH(CATCH_INCLUDE_PATH
-    catch.hpp
-    PATHS
-        ${CMAKE_SOURCE_DIR}/test
-)
+FILE(GLOB SOURCE_FILES src/*.cc src/*.h)
+FILE(GLOB INCLUDE_FILES include/BioIO/*.h)
 
-# Executable
+FILE(GLOB TEST_FILES test/*.cc)
+
+
+# Include and build library
 # ------------------------
-FILE(GLOB SOURCE_FILES src/*.cc src/modules/*.cc)
-FILE(GLOB HEADER_FILES src/*.h src/modules/*.h)
-
-add_executable(${PROJECT_NAME} ${SOURCE_FILES} ${HEADER_FILES})
+include_directories("${PROJECT_SOURCE_DIR}/include")
+add_library(${PROJECT_NAME} ${SOURCE_FILES} ${INCLUDE_FILES})
 
 
-# Build tests if CMAKE_BUILD_TYPE=Debug is set
+# Build executable (tests) and link library
 # ------------------------
-if (CMAKE_BUILD_TYPE MATCHES DEBUG OR CMAKE_BUILD_TYPE MATCHES "Debug")
-    if (NOT CATCH_INCLUDE_PATH)
-        MESSAGE(SEND_ERROR "Could not find file catch.hpp")
-    else()
-        include_directories(${CATCH_INCLUDE_PATH})
-        FILE(GLOB TEST_FILES test/*.cc test/modules/*.cc)
-        add_executable("${PROJECT_NAME}-test" ${TEST_FILES})
-    endif()
-endif()
+add_executable("${PROJECT_NAME}-test" ${TEST_FILES})
+target_link_libraries("${PROJECT_NAME}-test" ${PROJECT_NAME})
+
+# Copy fasta test files to build folder
+# ------------------------
+set(MY_TEST_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/fasta_test_files")
+file(MAKE_DIRECTORY ${MY_TEST_DIRECTORY})
+file(GLOB FAST_TEST_FILES test/fasta_files/*.fasta)
+file(COPY ${FAST_TEST_FILES} DESTINATION ${MY_TEST_DIRECTORY})
+
+
+# make build types
+# ------------------------
+ADD_CUSTOM_TARGET(debug
+  COMMAND ${CMAKE_COMMAND} -DCMAKE_BUILD_TYPE=Debug ${CMAKE_SOURCE_DIR}
+  COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --target all
+  COMMENT "Switch CMAKE_BUILD_TYPE to Debug"
+  )
+
+ADD_CUSTOM_TARGET(release
+  COMMAND ${CMAKE_COMMAND} -DCMAKE_BUILD_TYPE=Release ${CMAKE_SOURCE_DIR}
+  COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --target all
+  COMMENT "Switch CMAKE_BUILD_TYPE to Release"
+  )
