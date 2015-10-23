@@ -4,7 +4,9 @@ SILVA_UNPACKED=$(subst .gz,,$(SILVA_LOCAL))
 
 all: $(SILVA_UNPACKED)
 
-$(SILVA_LOCAL):
+
+$(SILVA_LOCAL): 
+	mkdir -p silva
 	wget -O $(SILVA_LOCAL) $(SILVA_FTP)
 
 $(SILVA_UNPACKED): $(SILVA_LOCAL)
