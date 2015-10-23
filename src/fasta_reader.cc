@@ -49,7 +49,7 @@ FastaReader::FastaReader(const std::string& filePath, int errorToleranceFlags) :
     }
   }
 
-  if(m_nextHeader.at(0) != '>') {
+  if(m_nextHeader.empty()) {
     std::string msg("Bad FASTA format: No header found.");
     throw FastaException(msg, 5);
   }

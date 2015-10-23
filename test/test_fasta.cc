@@ -26,15 +26,15 @@
 #include <string>
 
 TEST_CASE("read 9 fasta files", "[fasta_reader]") {
-  std::string filename1 = "test/fasta_files/test1.fasta";
-  std::string filename2 = "test/fasta_files/test2.fasta";
-  std::string filename3 = "test/fasta_files/test3.fasta";
-  std::string filename4 = "test/fasta_files/test4.fasta";
-  std::string filename5 = "test/fasta_files/test5.fasta";
-  std::string filename6 = "test/fasta_files/test6.fasta";
-  std::string filename7 = "test/fasta_files/test7.fasta";
-  std::string filename8 = "test/fasta_files/test8.fasta";
-  std::string filename9 = "test/fasta_files/test9.fasta";
+  std::string filename1 = "fasta_test_files/test1.fasta";
+  std::string filename2 = "fasta_test_files/test2.fasta";
+  std::string filename3 = "fasta_test_files/test3.fasta";
+  std::string filename4 = "fasta_test_files/test4.fasta";
+  std::string filename5 = "fasta_test_files/test5.fasta";
+  std::string filename6 = "fasta_test_files/test6.fasta";
+  std::string filename7 = "fasta_test_files/test7.fasta";
+  std::string filename8 = "fasta_test_files/test8.fasta";
+  std::string filename9 = "fasta_test_files/test9.fasta";
 
   SECTION("Test with test1.fasta") {
     FastaReader reader(filename1);
@@ -161,25 +161,9 @@ TEST_CASE("read 9 fasta files", "[fasta_reader]") {
   }
 }
 
-#include <string>
-#include <memory>
-#include <fstream>
-#include <exception>
-#include <iostream>
-#include <algorithm>
-
 TEST_CASE("fasta file with windows line-endings", "[fasta_reader]") {
-  /*std::ifstream inputStream;
-  inputStream.open("../test/fasta_files/test2_cr.fasta", std::ifstream::in);
-  std::string str;
-  while(std::getline(inputStream, str)) {
-    std::cout << str << std::endl;
-  }
-  std::cout << std::isspace('\r') << std::isspace('\n') << std::endl;
-  inputStream.close();*/
-
   SECTION("Test file test2_cr.fasta") {
-    std::string filepath = "test/fasta_files/test2_cr.fasta";
+    std::string filepath = "fasta_test_files/test2_cr.fasta";
     CAPTURE(filepath);
     FastaReader reader(filepath, FastaReader::IgnoreContentBeforeFirstHeader);
 
