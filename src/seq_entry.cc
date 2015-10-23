@@ -52,21 +52,29 @@ SeqEntry::~SeqEntry() {
 }
 
 SeqEntry& SeqEntry::operator=(const SeqEntry& other) {
-    if(this != &other) {
-        name_ = other.name_;
-        seq_ = other.seq_;
-        scores_ = other.scores_;
-        type_ = other.type_;
-    }
-    return *this;
+  if(this != &other) {
+    name_ = other.name_;
+    seq_ = other.seq_;
+    scores_ = other.scores_;
+    type_ = other.type_;
+  }
+  return *this;
 }
 
 SeqEntry SeqEntry::SubSeq(size_t i, size_t len) const {
-  return SeqEntry(name_, seq_.substr(i, len), scores_, type_);
+  if (!scores_.empty()) {
+    std::vector<uint8_t>::const_iterator first = scores_.begin() + i;
+    std::vector<uint8_t>::const_iterator last = first + len;
+    std::vector<uint8_t> newScores(first, last);
+
+    return SeqEntry(name_, seq_.substr(i, len), newScores, type_);
+  } else {
+    return SeqEntry(name_, seq_.substr(i, len), scores_, type_);
+  }
 }
 
 std::string& SeqEntry::name() {
-    return name_;
+  return name_;
 }
 
 const std::string& SeqEntry::name() const {
