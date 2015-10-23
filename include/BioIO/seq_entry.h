@@ -135,7 +135,7 @@ class SeqEntry {
     /**
      * // TODO
      */
-     friend std::ostream& operator<< (std::ostream& o, const SeqEntry& fred);
+     friend std::ostream& operator<< (std::ostream& o, const SeqEntry& sequence);
 
   private:
     std::string name_;
