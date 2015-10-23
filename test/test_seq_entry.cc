@@ -20,6 +20,7 @@
 
 #include "catch.hpp"
 
+#include <vector>
 #include <BioIO/bioio.h>
 
 TEST_CASE("sequences can be constructed, copied and moved", "[sequence]") {
@@ -70,24 +71,56 @@ TEST_CASE("sequences can be constructed, copied and moved", "[sequence]") {
 }
 
 TEST_CASE("subsequences can be extracted from sequences", "[sequence]") {
-  SeqEntry t1 = SeqEntry("Name", "Sequence", {}, SeqEntry::SeqType::nucleotide);
+  SECTION("With empty scores") {
+    SeqEntry t1 = SeqEntry("Name", "Sequence", {}, SeqEntry::SeqType::nucleotide);
 
-  REQUIRE(t1.name() == "Name");
-  REQUIRE(t1.seq() == "Sequence");
-  REQUIRE(t1.scores().empty());
-  REQUIRE(t1.type() == SeqEntry::SeqType::nucleotide);
+    REQUIRE(t1.name() == "Name");
+    REQUIRE(t1.seq() == "Sequence");
+    REQUIRE(t1.scores().empty());
+    REQUIRE(t1.type() == SeqEntry::SeqType::nucleotide);
 
-  SeqEntry t2 = t1.SubSeq(2, 4);
+    SeqEntry t2 = t1.SubSeq(2, 4);
 
-  // t1 stays unchanged
-  REQUIRE(t1.name() == "Name");
-  REQUIRE(t1.seq() == "Sequence");
-  REQUIRE(t1.scores().empty());
-  REQUIRE(t1.type() == SeqEntry::SeqType::nucleotide);
+    // t1 stays unchanged
+    REQUIRE(t1.name() == "Name");
+    REQUIRE(t1.seq() == "Sequence");
+    REQUIRE(t1.scores().empty());
+    REQUIRE(t1.type() == SeqEntry::SeqType::nucleotide);
 
-  // t2 contains expected subsequence of t1 and they are otherwise identical
-  REQUIRE(t2.name() == "Name");
-  REQUIRE(t2.seq() == "quen");
-  REQUIRE(t2.scores().empty());
-  REQUIRE(t2.type() == SeqEntry::SeqType::nucleotide);
+    // t2 contains expected subsequence of t1 and they are otherwise identical
+    REQUIRE(t2.name() == "Name");
+    REQUIRE(t2.seq() == "quen");
+    REQUIRE(t2.scores().empty());
+    REQUIRE(t2.type() == SeqEntry::SeqType::nucleotide);
+  }
+
+  SECTION("With empty scores") {
+    static const uint8_t scores[] = {0,1,2,3,4,5,6,7};
+    const std::vector<uint8_t> v(scores, scores + sizeof(scores) / sizeof(scores[0]));
+
+    SeqEntry t1 = SeqEntry("Name", "Sequence", v, SeqEntry::SeqType::nucleotide);
+
+    REQUIRE(t1.name() == "Name");
+    REQUIRE(t1.seq() == "Sequence");
+    REQUIRE(t1.scores() == v);
+    REQUIRE(t1.type() == SeqEntry::SeqType::nucleotide);
+
+    SeqEntry t2 = t1.SubSeq(2, 4);
+
+    // t1 stays unchanged
+    REQUIRE(t1.name() == "Name");
+    REQUIRE(t1.seq() == "Sequence");
+    REQUIRE(t1.scores() == v);
+    REQUIRE(t1.type() == SeqEntry::SeqType::nucleotide);
+
+    std::vector<uint8_t>::const_iterator first = v.begin() + 2;
+    std::vector<uint8_t>::const_iterator last = first + 4;
+    const std::vector<uint8_t> newVec(first, last);
+
+    // t2 contains expected subsequence of t1 and they are otherwise identical
+    REQUIRE(t2.name() == "Name");
+    REQUIRE(t2.seq() == "quen");
+    REQUIRE(t2.scores() == newVec);
+    REQUIRE(t2.type() == SeqEntry::SeqType::nucleotide);
+  }
 }
