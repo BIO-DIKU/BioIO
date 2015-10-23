@@ -6,7 +6,7 @@ SEQTK_GIT      = https://github.com/lh3/seqtk.git
 
 all: $(SILVA_UNPACKED) seqtk
 
-$(SILVA_LOCAL): 
+$(SILVA_LOCAL):
 	mkdir -p silva
 	wget -O $(SILVA_LOCAL) $(SILVA_FTP)
 
@@ -14,8 +14,12 @@ $(SILVA_UNPACKED): $(SILVA_LOCAL)
 	gunzip -k $(SILVA_LOCAL)
 
 seqtk:
-	git clone $(SEQTK_GIT) $@ 
+	git clone $(SEQTK_GIT) $@
 	cd $@ && make
+
+
+bench: seqtk $(SILVA_LOCAL)
+	time ./seqtk/seqtk seq $(SILVA_LOCAL) > /dev/null
 
 
 clean:
