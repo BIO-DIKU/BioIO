@@ -37,7 +37,7 @@ class FastqReader
     FastqReader& operator=(const FastqReader&) = delete;
     FastqReader(FastqReader&&) = delete;
 
-    FastqReader(const std::string& filePath, int errorToleranceLevel = 0);
+    FastqReader(const std::string& filePath);
 
     virtual ~FastqReader();
 
@@ -51,7 +51,6 @@ class FastqReader
   private:
     std::ifstream m_inputStream;
     std::string m_nextHeader;
-    int m_errorToleranceFlags;
 };
 
 #endif  // BIOIO_FASTQ_READER_H_

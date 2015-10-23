@@ -28,11 +28,12 @@
 
 #include <iostream>
 
-TEST_CASE("fastq reader", "[fastq_reader]") {
-  FastqReader reader("SRR121511.fastq");
+TEST_CASE("File not found exception", "[fastq_reader]") {
+  try {
+    FastqReader reader("SRR121511.fastq");
 
-  while(reader.hasNextEntry()) {
-    reader.nextEntry();
-    std::cout << '?';
+    FAIL("FastaReader did not throw exception");
+  } catch(FastaException e) {
+    REQUIRE(e.errorCode  == 1);
   }
 }

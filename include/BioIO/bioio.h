@@ -23,5 +23,6 @@
 
 #include <BioIO/seq_entry.h>
 #include <BioIO/fasta_reader.h>
+#include <BioIO/fastq_reader.h>
 
 #endif  // BIOIO_BIOIO_H_

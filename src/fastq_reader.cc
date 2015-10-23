@@ -20,9 +20,7 @@
 
 #include <BioIO/fastq_reader.h>
 
-FastqReader::FastqReader(const std::string& filePath, int errorToleranceFlags) :
-  m_errorToleranceFlags(errorToleranceFlags)
-{
+FastqReader::FastqReader(const std::string& filePath) {
   m_inputStream.open(filePath, std::ifstream::in);
 
   if (!m_inputStream.good()) {
