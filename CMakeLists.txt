@@ -77,3 +77,10 @@ ADD_CUSTOM_TARGET(release
   COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --target all
   COMMENT "Switch CMAKE_BUILD_TYPE to Release"
   )
+
+
+# Install instructions
+# ------------------------
+install (FILES ${INCLUDE_FILES} DESTINATION include)
+install (TARGETS ${PROJECT_NAME} DESTINATION lib)
+
