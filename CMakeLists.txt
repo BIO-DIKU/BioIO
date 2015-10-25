@@ -81,6 +81,7 @@ ADD_CUSTOM_TARGET(release
 
 # Install instructions
 # ------------------------
-install (FILES ${INCLUDE_FILES} DESTINATION include)
+message(${INCLUDE_FILES})
+install (DIRECTORY ${PROJECT_SOURCE_DIR}/include/BioIO DESTINATION include)
 install (TARGETS ${PROJECT_NAME} DESTINATION lib)
 
