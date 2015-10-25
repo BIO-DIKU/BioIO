@@ -78,6 +78,11 @@ class SeqEntry {
     SeqEntry SubSeq(size_t i, size_t len) const;
 
     /**
+     * Reverse sequence and scores.
+     */
+    void reverse();
+
+    /**
      * @return Reference to name
      */
     std::string& name();
