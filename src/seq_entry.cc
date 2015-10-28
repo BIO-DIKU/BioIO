@@ -20,6 +20,9 @@
 
 #include <BioIO/seq_entry.h>
 
+#include <ostream>
+#include <algorithm>
+
 SeqEntry::SeqEntry(SeqEntry::SeqType sequence_type) :
   type_(sequence_type)
 {}
@@ -73,6 +76,11 @@ SeqEntry SeqEntry::SubSeq(size_t i, size_t len) const {
   }
 }
 
+void SeqEntry::reverse() {
+  std::reverse(seq_.begin(), seq_.end());
+  std::reverse(scores_.begin(), scores_.end());
+}
+
 std::string& SeqEntry::name() {
   return name_;
 }
@@ -115,4 +123,8 @@ void SeqEntry::set_scores(const std::vector<uint8_t>& scores) {
 
 void SeqEntry::set_type(SeqType type) {
   type_ = type;
+}
+
+std::ostream& operator<< (std::ostream& o, const SeqEntry& sequence) {
+  return o << '>' << sequence.name_ << '\n' << sequence.seq_;
 }

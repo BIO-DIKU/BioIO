@@ -23,9 +23,10 @@
 
 #include <string>
 #include <vector>
+#include <ostream>
 
 /**
- * 
+ * // TODO
  */
 class SeqEntry {
   public:
@@ -75,6 +76,11 @@ class SeqEntry {
      * the given length.
      */
     SeqEntry SubSeq(size_t i, size_t len) const;
+
+    /**
+     * Reverse sequence and scores.
+     */
+    void reverse();
 
     /**
      * @return Reference to name
@@ -130,6 +136,11 @@ class SeqEntry {
      * @param Sequence type
      */
     void set_type(SeqType type);
+
+    /**
+     * // TODO
+     */
+     friend std::ostream& operator<< (std::ostream& o, const SeqEntry& sequence);
 
   private:
     std::string name_;

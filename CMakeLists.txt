@@ -77,3 +77,10 @@ ADD_CUSTOM_TARGET(release
   COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --target all
   COMMENT "Switch CMAKE_BUILD_TYPE to Release"
   )
+
+
+# Install instructions
+# ------------------------
+install (DIRECTORY ${PROJECT_SOURCE_DIR}/include/BioIO DESTINATION include)
+install (TARGETS ${PROJECT_NAME} DESTINATION lib)
+

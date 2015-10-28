@@ -20,7 +20,9 @@
 
 #include "catch.hpp"
 
+#include <ostream>
 #include <vector>
+#include <sstream>
 #include <BioIO/bioio.h>
 
 TEST_CASE("sequences can be constructed, copied and moved", "[sequence]") {
@@ -122,5 +124,66 @@ TEST_CASE("subsequences can be extracted from sequences", "[sequence]") {
     REQUIRE(t2.seq() == "quen");
     REQUIRE(t2.scores() == newVec);
     REQUIRE(t2.type() == SeqEntry::SeqType::nucleotide);
+  }
+}
+
+TEST_CASE("write SeqEntry", "[sequence]") {
+  SeqEntry t1 = SeqEntry("Name", "Sequence", {}, SeqEntry::SeqType::nucleotide);
+
+  std::stringstream ss;
+
+  ss << t1;
+
+  REQUIRE(ss.str() == ">Name\nSequence");
+}
+
+
+void test_reverse(SeqEntry& entry, std::string& exp_name, std::vector<uint8_t> exp_scores) {
+  std::string oldName = entry.name();
+  SeqEntry::SeqType oldType = entry.type();
+
+  entry.reverse();
+
+  // Name and type should stay the same
+  REQUIRE(entry.name() == oldName);
+  REQUIRE(entry.type() == oldType);
+
+  // Sequence and scores should be as expected
+  REQUIRE(entry.seq() == exp_name);
+  REQUIRE(entry.scores() == exp_scores);
+
+}
+
+TEST_CASE("Reverse SeqEntry", "[sequence]") {
+  SECTION("Reverse entry with empty scores") {
+    SeqEntry s1 = SeqEntry("Name", "Sequence", {}, SeqEntry::SeqType::nucleotide);
+    std::string s("ecneuqeS");
+    std::vector<uint8_t> v;
+
+    test_reverse(s1, s, v);
+  }
+
+  SECTION("Reverse entry with scores") {
+    // Initialize scores
+    static const uint8_t scores[] = {0,1,2,3,4,5,6,7};
+    const std::vector<uint8_t> v(scores, scores + sizeof(scores) / sizeof(scores[0]));
+
+    SeqEntry s1 = SeqEntry("Name", "Sequence", v, SeqEntry::SeqType::nucleotide);
+
+    // Expected
+    std::string s("ecneuqeS");
+    static const uint8_t exp_scores[] = {7,6,5,4,3,2,1,0};
+    const std::vector<uint8_t> v2(exp_scores, exp_scores + sizeof(exp_scores)
+                                  / sizeof(exp_scores[0]));
+
+    test_reverse(s1, s, v2);
+  }
+
+  SECTION("Reverse entry with empty sequence") {
+    SeqEntry s1 = SeqEntry("Name", "", {}, SeqEntry::SeqType::nucleotide);
+    std::string s;
+    std::vector<uint8_t> v;
+
+    test_reverse(s1, s, v);
   }
 }
