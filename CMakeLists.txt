@@ -60,8 +60,10 @@ target_link_libraries("${PROJECT_NAME}-test" ${PROJECT_NAME})
 # ------------------------
 set(MY_TEST_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/fasta_test_files")
 file(MAKE_DIRECTORY ${MY_TEST_DIRECTORY})
-file(GLOB FAST_TEST_FILES test/fasta_files/*.fasta)
-file(COPY ${FAST_TEST_FILES} DESTINATION ${MY_TEST_DIRECTORY})
+file(GLOB FASTA_TEST_FILES test/fasta_files/*.fasta)
+file(COPY ${FASTA_TEST_FILES} DESTINATION ${MY_TEST_DIRECTORY}/fasta)
+file(GLOB FASTQ_TEST_FILES test/fastq_files/*.fastq)
+file(COPY ${FASTQ_TEST_FILES} DESTINATION ${MY_TEST_DIRECTORY}/fastq)
 
 
 # make build types
@@ -83,4 +85,3 @@ ADD_CUSTOM_TARGET(release
 # ------------------------
 install (DIRECTORY ${PROJECT_SOURCE_DIR}/include/BioIO DESTINATION include)
 install (TARGETS ${PROJECT_NAME} DESTINATION lib)
-

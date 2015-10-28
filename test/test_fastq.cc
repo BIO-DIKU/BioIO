@@ -28,7 +28,23 @@
 
 #include <iostream>
 
-TEST_CASE("File not found exception", "[fastq_reader]") {
+static std::string folder = "fasta_test_files/fastq/";
+
+static std::string filename1 = folder + "test1.fastq";
+
+TEST_CASE("Load properly formatted file", "[fastq_reader]") {
+  FastqReader reader(filename1);
+
+  auto entry1 = reader.nextEntry();
+
+  REQUIRE(entry1->name() == "fastq1");
+  REQUIRE(entry1->scores().size() == entry1->seq().size());
+  REQUIRE(entry1->seq() == "GATTACA");
+
+  REQUIRE_FALSE(reader.hasNextEntry());
+}
+
+TEST_CASE("Properly raise file not found exception", "[fastq_reader]") {
   try {
     FastqReader reader("SRR121511.fastq");
 

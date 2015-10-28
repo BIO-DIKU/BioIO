@@ -33,6 +33,7 @@ FastqReader::FastqReader(const std::string& filePath) {
     if (m_nextHeader.empty()) continue;  // Ignore empty lines
 
     if (m_nextHeader.at(0) == '@') {
+      m_nextHeader = m_nextHeader.substr(1);
       break;
     } else {
       std::string msg("Bad FASTQ format: Contents before first header. Line: \"" +
@@ -77,27 +78,26 @@ std::unique_ptr<SeqEntry> FastqReader::nextEntry() {
     throw FastaException(msg, 7);
   }
 
-  const size_t seqSize = seqPtr->seq().size();
-  if(quality.size() != seqSize) {
-    std::string msg("Bad FASTQ format: Seqence and sequence quality does not have the same length.");
+  if(quality.size() != seqPtr->seq().size()) {
+    std::string msg("Bad FASTQ format: Sequence and sequence quality does not have the same length.");
     throw FastaException(msg, 8);
+  }
+
+  for (auto c : quality) {
+    seqPtr->scores().push_back(static_cast<uint8_t>(c) - 33);
   }
 
   while (windowsSafeGetLine(m_inputStream, m_nextHeader)) {
     if (m_nextHeader.empty()) continue;  // Ignore empty lines
 
     if (m_nextHeader.at(0) == '@') {
+      m_nextHeader = m_nextHeader.substr(1);
       break;
     } else {
       std::string msg("Bad FASTQ format: Contents before next header. Line: \"" +
         m_nextHeader + "\"");
       throw FastaException(msg, 2);
     }
-  }
-
-  seqPtr->scores().reserve(seqSize);
-  for(size_t i = 0; i < seqSize; ++i) {
-    seqPtr->scores()[i] = static_cast<uint8_t>(quality[i]) - 33;
   }
 
   return seqPtr;

@@ -25,16 +25,18 @@
 #include <memory>
 #include <string>
 
+static std::string folder = "fasta_test_files/fasta/";
+
 TEST_CASE("read 9 fasta files", "[fasta_reader]") {
-  std::string filename1 = "fasta_test_files/test1.fasta";
-  std::string filename2 = "fasta_test_files/test2.fasta";
-  std::string filename3 = "fasta_test_files/test3.fasta";
-  std::string filename4 = "fasta_test_files/test4.fasta";
-  std::string filename5 = "fasta_test_files/test5.fasta";
-  std::string filename6 = "fasta_test_files/test6.fasta";
-  std::string filename7 = "fasta_test_files/test7.fasta";
-  std::string filename8 = "fasta_test_files/test8.fasta";
-  std::string filename9 = "fasta_test_files/test9.fasta";
+  std::string filename1 = folder + "test1.fasta";
+  std::string filename2 = folder + "test2.fasta";
+  std::string filename3 = folder + "test3.fasta";
+  std::string filename4 = folder + "test4.fasta";
+  std::string filename5 = folder + "test5.fasta";
+  std::string filename6 = folder + "test6.fasta";
+  std::string filename7 = folder + "test7.fasta";
+  std::string filename8 = folder + "test8.fasta";
+  std::string filename9 = folder + "test9.fasta";
 
   SECTION("Test with test1.fasta") {
     FastaReader reader(filename1);

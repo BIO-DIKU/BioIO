@@ -26,7 +26,7 @@
 #include <ostream>
 
 /**
- * // TODO
+ * // TODO: Class comment
  */
 class SeqEntry {
   public:
