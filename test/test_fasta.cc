@@ -27,6 +27,8 @@
 
 static std::string folder = "fasta_test_files/fasta/";
 
+static std::string windowsFasta = folder + "test2_cr.fasta";
+
 TEST_CASE("read 9 fasta files", "[fasta_reader]") {
   std::string filename1 = folder + "test1.fasta";
   std::string filename2 = folder + "test2.fasta";
@@ -37,6 +39,7 @@ TEST_CASE("read 9 fasta files", "[fasta_reader]") {
   std::string filename7 = folder + "test7.fasta";
   std::string filename8 = folder + "test8.fasta";
   std::string filename9 = folder + "test9.fasta";
+
 
   SECTION("Test with test1.fasta") {
     FastaReader reader(filename1);
@@ -165,9 +168,8 @@ TEST_CASE("read 9 fasta files", "[fasta_reader]") {
 
 TEST_CASE("fasta file with windows line-endings", "[fasta_reader]") {
   SECTION("Test file test2_cr.fasta") {
-    std::string filepath = "fasta_test_files/test2_cr.fasta";
-    CAPTURE(filepath);
-    FastaReader reader(filepath, FastaReader::IgnoreContentBeforeFirstHeader);
+    CAPTURE(windowsFasta);
+    FastaReader reader(windowsFasta, FastaReader::IgnoreContentBeforeFirstHeader);
 
     REQUIRE(reader.hasNextEntry());
 
