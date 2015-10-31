@@ -56,10 +56,10 @@ SeqEntry::~SeqEntry() {
 
 SeqEntry& SeqEntry::operator=(const SeqEntry& other) {
   if(this != &other) {
-    name_ = other.name_;
-    seq_ = other.seq_;
+    name_   = other.name_;
+    seq_    = other.seq_;
     scores_ = other.scores_;
-    type_ = other.type_;
+    type_   = other.type_;
   }
   return *this;
 }
