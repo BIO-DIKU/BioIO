@@ -50,14 +50,14 @@ class FastaException : public std::exception {
 class FastaReader
 {
   public:
-    static const uint8_t IgnoreContentBeforeFirstHeader = 0x01;
+    static const uint8_t ignore_content_before_first_header = 0x01;
 
   public:
     FastaReader(const FastaReader&) = delete;
     FastaReader& operator=(const FastaReader&) = delete;
     FastaReader(FastaReader&&) = delete;
 
-    FastaReader(const std::string& filePath, int errorToleranceLevel = 0);
+    FastaReader(const std::string& file_path, int errorToleranceLevel = 0);
 
     virtual ~FastaReader();
 
@@ -66,9 +66,9 @@ class FastaReader
     bool hasNextEntry() const;
 
   private:
-    std::ifstream m_inputStream;
-    std::string m_nextHeader;
-    int m_errorToleranceFlags;
+    std::ifstream input_stream_;
+    std::string   next_header_;
+    int           error_tolerance_flags_;
 
     std::istream& windowsSafeGetLine(std::istream& is, std::string& str);
 };

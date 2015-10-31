@@ -165,7 +165,7 @@ TEST_CASE("fasta file with windows line-endings", "[fasta_reader]") {
   SECTION("Test file test2_cr.fasta") {
     std::string filepath = "fasta_test_files/test2_cr.fasta";
     CAPTURE(filepath);
-    FastaReader reader(filepath, FastaReader::IgnoreContentBeforeFirstHeader);
+    FastaReader reader(filepath, FastaReader::ignore_content_before_first_header);
 
     REQUIRE(reader.hasNextEntry());
 
