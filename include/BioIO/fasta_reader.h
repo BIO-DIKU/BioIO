@@ -51,13 +51,14 @@ class FastaReader
 {
   public:
     static const uint8_t IgnoreContentBeforeFirstHeader = 0x01;
+    static const size_t kStdBufferSize = 1<<24; // 16MB
 
   public:
     FastaReader(const FastaReader&) = delete;
     FastaReader& operator=(const FastaReader&) = delete;
     FastaReader(FastaReader&&) = delete;
 
-    FastaReader(const std::string& filePath, int errorToleranceLevel = 0);
+    FastaReader(const std::string& filePath, const size_t buffer_size=kStdBufferSize);
 
     virtual ~FastaReader();
 
@@ -66,11 +67,15 @@ class FastaReader
     bool hasNextEntry() const;
 
   private:
-    std::ifstream m_inputStream;
-    std::string m_nextHeader;
-    int m_errorToleranceFlags;
+    std::ifstream input_stream;
+    std::string buffer;
 
-    std::istream& windowsSafeGetLine(std::istream& is, std::string& str);
+    size_t header_pos; //Position of last found header (in buffer)
+    size_t buffer_pos; //Position of buffer (in stream)
+    size_t input_len;
+
+    void BufferFlushAndFill();
+
 };
 
 #endif  // BIOIO_FASTA_READER_H_

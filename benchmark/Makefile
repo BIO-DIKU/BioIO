@@ -21,6 +21,8 @@ seqtk:
 bench: seqtk $(SILVA_LOCAL)
 	time ./seqtk/seqtk seq $(SILVA_LOCAL) > /dev/null
 
+count_a: count_a.cc ../build/libBioIO.a
+	g++ -g -std=c++11 -I../include $^ -o $@ 
 
 clean:
 	rm -rf $(SILVA_UNPACKED) seqtk
