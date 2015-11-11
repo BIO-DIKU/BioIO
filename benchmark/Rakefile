@@ -1,0 +1,103 @@
+task default: 'all'
+
+task all: %i(seqtk long short bm_seqtk_read bm_python_read plot)
+
+# Method to time a given code block and write the result to a given file.
+#
+# @param file [String] Path to file with time result.
+# @param block [Proc] Code to execute
+def time(file, &block)
+  fail unless block
+
+  t1 = Time.now
+  block.call
+  t2 = Time.now
+
+  File.open(file, 'w') do |ios|
+    ios.puts t2 - t1
+  end
+end
+
+desc 'Download and install seqtk'
+task :seqtk do
+  unless File.directory? 'seqtk'
+    sh %(git clone https://github.com/lh3/seqtk.git)
+    sh %(cd seqtk && make)
+  end
+end
+
+desc 'Create data file with long sequences'
+task :long do
+  unless File.exist? 'long.fna'
+    File.open('long.fna', 'w') do |ios|
+      seq = ('A' * 200_000_000).gsub(/(.{80})/, "\\1\n")
+      20.times { |i| ios.puts ">seq_#{i}", seq }
+    end
+  end
+end
+
+desc 'Create data file with short sequences'
+task :short do
+  unless File.exist? 'short.fna'
+    File.open('short.fna', 'w') do |ios|
+      seq = ('A' * 200).gsub(/(.{80})/, "\\1\n")
+      20_000_000.times { |i| ios.puts ">seq_#{i}", seq }
+    end
+  end
+end
+
+desc 'Benchmark seqtk FASTA reading'
+task :bm_seqtk_read do
+  unless File.exist? 'seqtk_read_short.txt'
+    time('seqtk_read_short.txt') do
+      sh %(seqtk/seqtk seq short.fna > /dev/null)
+    end
+  end
+
+  unless File.exist? 'seqtk_read_long.txt'
+    time('seqtk_read_long.txt') do
+      sh %(seqtk/seqtk seq long.fna > /dev/null)
+    end
+  end
+end
+
+desc 'Benchmark Python FASTA reading'
+task :bm_python_read do
+  unless File.exist? 'python_read_short.txt'
+    time('python_read_short.txt') do
+      sh %(python fasta_reader.py short.fna > /dev/null)
+    end
+  end
+
+  unless File.exist? 'python_read_long.txt'
+    time('python_read_long.txt') do
+      sh %(python fasta_reader.py long.fna > /dev/null)
+    end
+  end
+end
+
+desc 'Create benchmark plot'
+task :plot do
+  unless File.exist? 'benchmark.png'
+    File.open('benchmark.dat', 'w') do |out|
+      out.puts 'File seqtk Python'
+      out.puts [
+        'Short',
+        File.read('seqtk_read_short.txt').chomp,
+        File.read('python_read_short.txt').chomp
+      ].join(' ')
+      out.puts [
+        'Long',
+        File.read('seqtk_read_long.txt').chomp,
+        File.read('python_read_long.txt').chomp
+      ].join(' ')
+    end
+
+    sh %(gnuplot plot_benchmark.gp)
+  end
+end
+
+desc 'Cleanup files and directories'
+task :clean do
+  sh %(rm -rf seqtk *.fna *.txt *.dat *.png)
+end
