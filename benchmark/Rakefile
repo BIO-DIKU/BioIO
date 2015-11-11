@@ -1,6 +1,6 @@
 task default: 'all'
 
-task all: %i(seqtk long short bm_seqtk_read bm_python_read plot)
+task all: %i(bioio seqtk long short bm_seqtk_read bm_python_read plot)
 
 # Method to time a given code block and write the result to a given file.
 #
@@ -15,6 +15,13 @@ def time(file, &block)
 
   File.open(file, 'w') do |ios|
     ios.puts t2 - t1
+  end
+end
+
+desc 'Build bioio'
+task :bioio do
+  unless File.exist? 'bioio'
+    sh %(g++ -std=c++11 -I ../include/ bioio.cc ../libBioIO.a -o bioio)
   end
 end
 
@@ -42,6 +49,21 @@ task :short do
     File.open('short.fna', 'w') do |ios|
       seq = ('A' * 200).gsub(/(.{80})/, "\\1\n")
       20_000_000.times { |i| ios.puts ">seq_#{i}", seq }
+    end
+  end
+end
+
+desc 'Benchmark bioio FASTA reading'
+task :bm_seqtk_read do
+  unless File.exist? 'bioio_read_short.txt'
+    time('bioio_read_short.txt') do
+      sh %(./bioio short.fna > /dev/null)
+    end
+  end
+
+  unless File.exist? 'bioio_read_long.txt'
+    time('bioio_read_long.txt') do
+      sh %(./bioio long.fna > /dev/null)
     end
   end
 end
@@ -80,14 +102,16 @@ desc 'Create benchmark plot'
 task :plot do
   unless File.exist? 'benchmark.png'
     File.open('benchmark.dat', 'w') do |out|
-      out.puts 'File seqtk Python'
+      out.puts 'File BioIO seqtk Python'
       out.puts [
         'Short',
+        File.read('bioio_read_short.txt').chomp,
         File.read('seqtk_read_short.txt').chomp,
         File.read('python_read_short.txt').chomp
       ].join(' ')
       out.puts [
         'Long',
+        File.read('bioio_read_long.txt').chomp,
         File.read('seqtk_read_long.txt').chomp,
         File.read('python_read_long.txt').chomp
       ].join(' ')
@@ -99,5 +123,5 @@ end
 
 desc 'Cleanup files and directories'
 task :clean do
-  sh %(rm -rf seqtk *.fna *.txt *.dat *.png)
+  sh %(rm -rf bioio seqtk *.fna *.txt *.dat *.png)
 end
