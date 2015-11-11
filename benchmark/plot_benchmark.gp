@@ -7,9 +7,9 @@
 
 # Example data below (benchmark.dat):
 
-# File	seqtk  Python
-# Short	53	22
-# Long	1317	1226
+# File BioIO seqtk kseq Python
+# Short 92.719564 9.440293 24.070178 81.315654
+# Long 67.578663 4.264639 14.40807 15.275339
 
 set terminal png
 set output 'benchmark.png'
@@ -25,6 +25,4 @@ set lmargin 15
 set ylabel "Seconds"
 set logscale y
 set xtics scale 0 rotate by -30 font "Arial,9"
-plot 'benchmark.dat' using 2:xtic(1) lt 1 lc rgb "#2BCE48",
-                  '' using 3 lt 2 lc rgb "#0075DC",
-                  '' using 4 lt 3 lc rgb "#FFCC33"
+plot 'benchmark.dat' using 2:xtic(1) lt 1 lc rgb "#fcaf61", '' using 3 lt 2 lc rgb "#5bd7b3", '' using 4 lt 3 lc rgb "#a8988b", '' using 5 lt 3 lc rgb "#e8e354"

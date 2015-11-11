@@ -1,5 +1,6 @@
 bioio
 seqtk
+kseq
 *.fna
 *.txt
 *.dat

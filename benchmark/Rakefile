@@ -1,6 +1,6 @@
 task default: 'all'
 
-task all: %i(bioio seqtk long short bm_seqtk_read bm_python_read plot)
+task all: %i(bioio seqtk kseq long short bm_seqtk_read bm_python_read plot)
 
 # Method to time a given code block and write the result to a given file.
 #
@@ -30,6 +30,17 @@ task :seqtk do
   unless File.directory? 'seqtk'
     sh %(git clone https://github.com/lh3/seqtk.git)
     sh %(cd seqtk && make)
+  end
+end
+
+desc 'Download and install kseq'
+task :kseq do
+  unless File.directory? 'kseq'
+    Dir.mkdir 'kseq'
+    Dir.chdir 'kseq'
+    sh %(wget http://lh3lh3.users.sourceforge.net/download/kseq.tar.bz2)
+    sh %(tar -jxvf kseq.tar.bz2)
+    sh %(make)
   end
 end
 
@@ -83,6 +94,21 @@ task :bm_seqtk_read do
   end
 end
 
+desc 'Benchmark kseq FASTA reading'
+task :bm_kseq_read do
+  unless File.exist? 'kseq_read_short.txt'
+    time('kseq_read_short.txt') do
+      sh %(kseq/kseq_test short.fna > /dev/null)
+    end
+  end
+
+  unless File.exist? 'kseq_read_long.txt'
+    time('kseq_read_long.txt') do
+      sh %(kseq/kseq_test long.fna > /dev/null)
+    end
+  end
+end
+
 desc 'Benchmark Python FASTA reading'
 task :bm_python_read do
   unless File.exist? 'python_read_short.txt'
@@ -102,17 +128,19 @@ desc 'Create benchmark plot'
 task :plot do
   unless File.exist? 'benchmark.png'
     File.open('benchmark.dat', 'w') do |out|
-      out.puts 'File BioIO seqtk Python'
+      out.puts 'File BioIO seqtk kseq Python'
       out.puts [
         'Short',
         File.read('bioio_read_short.txt').chomp,
         File.read('seqtk_read_short.txt').chomp,
+        File.read('kseq_read_short.txt').chomp,
         File.read('python_read_short.txt').chomp
       ].join(' ')
       out.puts [
         'Long',
         File.read('bioio_read_long.txt').chomp,
         File.read('seqtk_read_long.txt').chomp,
+        File.read('kseq_read_long.txt').chomp,
         File.read('python_read_long.txt').chomp
       ].join(' ')
     end
@@ -123,5 +151,5 @@ end
 
 desc 'Cleanup files and directories'
 task :clean do
-  sh %(rm -rf bioio seqtk *.fna *.txt *.dat *.png)
+  sh %(rm -rf bioio seqtk kseq *.fna *.txt *.dat *.png)
 end
