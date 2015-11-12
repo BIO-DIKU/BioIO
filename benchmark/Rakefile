@@ -1,6 +1,6 @@
 task default: 'all'
 
-task all: %i(bioio seqtk kseq long short bm_seqtk_read bm_python_read plot)
+task all: %i(bioio seqtk kseq long short bm_seqtk bm_python bm_kseq plot)
 
 # Method to time a given code block and write the result to a given file.
 #
@@ -41,6 +41,7 @@ task :kseq do
     sh %(wget http://lh3lh3.users.sourceforge.net/download/kseq.tar.bz2)
     sh %(tar -jxvf kseq.tar.bz2)
     sh %(make)
+    Dir.chdir '..'
   end
 end
 
@@ -48,7 +49,7 @@ desc 'Create data file with long sequences'
 task :long do
   unless File.exist? 'long.fna'
     File.open('long.fna', 'w') do |ios|
-      seq = ('A' * 200_000_000).gsub(/(.{80})/, "\\1\n")
+      seq = ('A' * 200_000_000).gsub(/(.{10})/, '\\1 ').gsub(/(.{80})/, "\\1\n")
       20.times { |i| ios.puts ">seq_#{i}", seq }
     end
   end
@@ -58,68 +59,68 @@ desc 'Create data file with short sequences'
 task :short do
   unless File.exist? 'short.fna'
     File.open('short.fna', 'w') do |ios|
-      seq = ('A' * 200).gsub(/(.{80})/, "\\1\n")
+      seq = ('A' * 200).gsub(/(.{10})/, '\\1 ').gsub(/(.{80})/, "\\1\n")
       20_000_000.times { |i| ios.puts ">seq_#{i}", seq }
     end
   end
 end
 
-desc 'Benchmark bioio FASTA reading'
-task :bm_seqtk_read do
-  unless File.exist? 'bioio_read_short.txt'
-    time('bioio_read_short.txt') do
+desc 'Benchmark bioio'
+task :bm_seqtk do
+  unless File.exist? 'bioio_short.txt'
+    time('bioio_short.txt') do
       sh %(./bioio short.fna > /dev/null)
     end
   end
 
-  unless File.exist? 'bioio_read_long.txt'
-    time('bioio_read_long.txt') do
+  unless File.exist? 'bioio_long.txt'
+    time('bioio_long.txt') do
       sh %(./bioio long.fna > /dev/null)
     end
   end
 end
 
-desc 'Benchmark seqtk FASTA reading'
-task :bm_seqtk_read do
-  unless File.exist? 'seqtk_read_short.txt'
-    time('seqtk_read_short.txt') do
+desc 'Benchmark seqtk'
+task :bm_seqtk do
+  unless File.exist? 'seqtk_short.txt'
+    time('seqtk_short.txt') do
       sh %(seqtk/seqtk seq short.fna > /dev/null)
     end
   end
 
-  unless File.exist? 'seqtk_read_long.txt'
-    time('seqtk_read_long.txt') do
+  unless File.exist? 'seqtk_long.txt'
+    time('seqtk_long.txt') do
       sh %(seqtk/seqtk seq long.fna > /dev/null)
     end
   end
 end
 
-desc 'Benchmark kseq FASTA reading'
-task :bm_kseq_read do
-  unless File.exist? 'kseq_read_short.txt'
-    time('kseq_read_short.txt') do
+desc 'Benchmark kseq'
+task :bm_kseq do
+  unless File.exist? 'kseq_short.txt'
+    time('kseq_short.txt') do
       sh %(kseq/kseq_test short.fna > /dev/null)
     end
   end
 
-  unless File.exist? 'kseq_read_long.txt'
-    time('kseq_read_long.txt') do
+  unless File.exist? 'kseq_long.txt'
+    time('kseq_long.txt') do
       sh %(kseq/kseq_test long.fna > /dev/null)
     end
   end
 end
 
-desc 'Benchmark Python FASTA reading'
-task :bm_python_read do
-  unless File.exist? 'python_read_short.txt'
-    time('python_read_short.txt') do
-      sh %(python fasta_reader.py short.fna > /dev/null)
+desc 'Benchmark Python'
+task :bm_python do
+  unless File.exist? 'python_short.txt'
+    time('python_short.txt') do
+      sh %(python bioio.py short.fna > /dev/null)
     end
   end
 
-  unless File.exist? 'python_read_long.txt'
-    time('python_read_long.txt') do
-      sh %(python fasta_reader.py long.fna > /dev/null)
+  unless File.exist? 'python_long.txt'
+    time('python_long.txt') do
+      sh %(python bioio.py long.fna > /dev/null)
     end
   end
 end
@@ -131,17 +132,17 @@ task :plot do
       out.puts 'File BioIO seqtk kseq Python'
       out.puts [
         'Short',
-        File.read('bioio_read_short.txt').chomp,
-        File.read('seqtk_read_short.txt').chomp,
-        File.read('kseq_read_short.txt').chomp,
-        File.read('python_read_short.txt').chomp
+        File.read('bioio_short.txt').chomp,
+        File.read('seqtk_short.txt').chomp,
+        File.read('kseq_short.txt').chomp,
+        File.read('python_short.txt').chomp
       ].join(' ')
       out.puts [
         'Long',
-        File.read('bioio_read_long.txt').chomp,
-        File.read('seqtk_read_long.txt').chomp,
-        File.read('kseq_read_long.txt').chomp,
-        File.read('python_read_long.txt').chomp
+        File.read('bioio_long.txt').chomp,
+        File.read('seqtk_long.txt').chomp,
+        File.read('kseq_long.txt').chomp,
+        File.read('python_long.txt').chomp
       ].join(' ')
     end
 
