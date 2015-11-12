@@ -20,13 +20,16 @@
 
 #include <BioIO/bioio.h>
 #include <BioIO/fasta_reader.h>
+#include <iostream>
 
 int main(int argc, char** argv) {
   if (argc > 1) {
     FastaReader reader(argv[1]);
 
-    while (reader.hasNextEntry()) {
-      reader.nextEntry();
+    while (reader.HasNextEntry()) {
+      auto entry = reader.NextEntry();
+      std::cout << ">" << entry->name() << std::endl;
+      std::cout << entry->seq() << std::endl;
     }
   }
 
