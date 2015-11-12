@@ -25,4 +25,7 @@ set lmargin 15
 set ylabel "Seconds"
 set logscale y
 set xtics scale 0 rotate by -30 font "Arial,9"
-plot 'benchmark.dat' using 2:xtic(1) lt 1 lc rgb "#fcaf61", '' using 3 lt 2 lc rgb "#5bd7b3", '' using 4 lt 3 lc rgb "#a8988b", '' using 5 lt 3 lc rgb "#e8e354"
+plot 'benchmark.dat' using 2:xtic(1) lt 1 lc rgb "#fcaf61", \
+                  '' using 3 lt 2 lc rgb "#5bd7b3", \
+		  '' using 4 lt 3 lc rgb "#a8988b", \
+		  '' using 5 lt 3 lc rgb "#e8e354"
