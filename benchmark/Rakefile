@@ -13,9 +13,7 @@ def time(file, &block)
   block.call
   t2 = Time.now
 
-  File.open(file, 'w') do |ios|
-    ios.puts t2 - t1
-  end
+  File.open(file, 'w') { |ios| ios.puts t2 - t1 }
 end
 
 desc 'Build bioio'
