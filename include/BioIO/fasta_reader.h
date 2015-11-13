@@ -66,11 +66,15 @@ class FastaReader
     bool hasNextEntry() const;
 
   private:
-    std::ifstream input_stream_;
-    std::string   next_header_;
+    static const size_t MAX_LINE = 100000;
+    char* result;
+    char input_line[MAX_LINE];
+    FILE * fp;
+    std::unique_ptr<SeqEntry> seqPtr;
     int           error_tolerance_flags_;
 
     std::istream& windowsSafeGetLine(std::istream& is, std::string& str);
+    void toLine(char* cstr);
 };
 
 #endif  // BIOIO_FASTA_READER_H_
