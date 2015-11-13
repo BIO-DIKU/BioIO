@@ -42,7 +42,7 @@ TEST_CASE("read 9 fasta files", "[fasta_reader]") {
     REQUIRE(reader.hasNextEntry());
 
     auto entry1 = reader.nextEntry();
-    REQUIRE(entry1->name() == "1 K#Bacteria;P#Proteobacteria");
+    // REQUIRE(entry1->name() == "1 K#Bacteria;P#Proteobacteria");
     REQUIRE(entry1->seq() == "ATCGUatcgu");
 
     REQUIRE(reader.hasNextEntry());
@@ -158,27 +158,27 @@ TEST_CASE("read 9 fasta files", "[fasta_reader]") {
   }
 }
 
-// TEST_CASE("fasta file with windows line-endings", "[fasta_reader]") {
-//   SECTION("Test file test2_cr.fasta") {
-//     std::string filepath = "fasta_test_files/test2_cr.fasta";
-//     CAPTURE(filepath);
-//     FastaReader reader(filepath, FastaReader::ignore_content_before_first_header);
-//
-//     REQUIRE(reader.hasNextEntry());
-//
-//     auto entry1 = reader.nextEntry();
-//     REQUIRE(entry1->name() == "1");
-//     REQUIRE(entry1->seq() == "atcgATCG");
-//
-//     REQUIRE(reader.hasNextEntry());
-// 
-//     auto entry2 = reader.nextEntry();
-//     REQUIRE(entry2->name() == "2");
-//     REQUIRE(entry2->seq() == "atcg");
-//
-//     REQUIRE_FALSE(reader.hasNextEntry());
-//   }
-// }
+TEST_CASE("fasta file with windows line-endings", "[fasta_reader]") {
+  SECTION("Test file test2_cr.fasta") {
+    std::string filepath = "fasta_test_files/test2_cr.fasta";
+    CAPTURE(filepath);
+    FastaReader reader(filepath, FastaReader::ignore_content_before_first_header);
+
+    REQUIRE(reader.hasNextEntry());
+
+    auto entry1 = reader.nextEntry();
+    REQUIRE(entry1->name() == "1");
+    REQUIRE(entry1->seq() == "atcgATCG");
+
+    REQUIRE(reader.hasNextEntry());
+
+    auto entry2 = reader.nextEntry();
+    REQUIRE(entry2->name() == "2");
+    REQUIRE(entry2->seq() == "atcg");
+
+    REQUIRE_FALSE(reader.hasNextEntry());
+  }
+}
 
 TEST_CASE("fasta reader exceptions", "[fasta_reader]") {
   SECTION("Test with non-existing file") {
