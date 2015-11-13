@@ -48,7 +48,7 @@ FastaReader::FastaReader(const std::string& file_path, int error_tolerance_flags
     }
   }
 
-  if (input_line[0] != '>') {
+  if (input_line[0] != '>' || input_line[1] == '\n') {
     std::string msg("Bad FASTA format: No header found.");
     throw FastaException(msg, 5);
   }
