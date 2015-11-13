@@ -24,9 +24,8 @@
 #include <algorithm>
 #include <iostream>
 
-FastaReader::FastaReader(const std::string& file_path, int error_tolerance_flags) :
-  error_tolerance_flags_(error_tolerance_flags)
-{
+FastaReader::FastaReader(const std::string& file_path, int error_tolerance_flags)
+    : error_tolerance_flags_(error_tolerance_flags) {
   input_stream_.open(file_path, std::ifstream::in);
 
   if (!input_stream_.good()) {
@@ -34,27 +33,17 @@ FastaReader::FastaReader(const std::string& file_path, int error_tolerance_flags
     throw FastaException(msg, 1);
   }
 
-  // Read until eof or the first header is located
-  while (windowsSafeGetLine(input_stream_, next_header_)) {
-    if (next_header_.empty()) continue;  // Ignore empty lines
+  // read and ignore until first occurring '>' character
+  input_stream_.ignore(std::numeric_limits<std::streamsize>::max(), '>');
 
-    if (next_header_.at(0) == '>') {
-      break;
-    } else if (error_tolerance_flags_ & ignore_content_before_first_header) {
-      // continue;
-    } else {
-      std::string msg("Bad FASTA format: Contents before first header. Line: \"" +
-        next_header_ + "\"");
-      throw FastaException(msg, 2);
-    }
-  }
-
-  if (next_header_.empty()) {
+  // '>' character was not read if either stream fails or reaches EOF
+  if (input_stream_.fail() || input_stream_.eof()) {
     std::string msg("Bad FASTA format: No header found.");
     throw FastaException(msg, 5);
   }
 
-  next_header_ = next_header_.substr(1);
+  // read first header
+  getline(input_stream_, next_header_);
 }
 
 FastaReader::~FastaReader() {
@@ -63,38 +52,30 @@ FastaReader::~FastaReader() {
 
 std::unique_ptr<SeqEntry> FastaReader::nextEntry() {
   std::unique_ptr<SeqEntry> seqPtr(new SeqEntry());
-  std::stringstream ss;
-
-  if (next_header_.empty()) {
-    std::string msg("Bad FASTA format: Empty header.");
-    throw FastaException(msg, 3);
-  }
 
   seqPtr->name() = next_header_;
 
-  while (windowsSafeGetLine(input_stream_, next_header_)) {
-    if (next_header_.length() == 0) continue;  // Ignore empty lines
+  std::string seq_buf;
 
-    if (next_header_.at(0) == '>') {
-      next_header_ = next_header_.substr(1);
-      break;
-    } else {
-      ss << next_header_;
-    }
-  }
+  // read until first next '>' character or EOF
+  getline(input_stream_, seq_buf, '>');
 
-  seqPtr->seq() = ss.str();
+  // read next sequence header
+  getline(input_stream_, next_header_);
+
+  seqPtr->seq() = seq_buf;
 
   seqPtr->seq().erase(
     std::remove_if(
       seqPtr->seq().begin(),
       seqPtr->seq().end(),
       [](char ch) {
-        return std::isspace<char>(ch, std::locale::classic());
+        return ch == '\n' || ch == '\r' || ch == ' ';
       }), seqPtr->seq().end());
 
   if (seqPtr->seq().empty()) {
-    std::string msg("Bad FASTA format: Missing sequence for header \"" + next_header_ + "\"");
+    std::string msg("Bad FASTA format: Missing sequence for header \""
+                      + next_header_ + "\"");
     throw FastaException(msg, 4);
   }
 
