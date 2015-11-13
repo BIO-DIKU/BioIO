@@ -39,13 +39,19 @@ class FastaReader
 
   ~FastaReader();
 
+  /*
+   * Return next sequence entry.
+   */
   std::unique_ptr<SeqEntry> NextEntry();
 
+  /*
+   * Tells if more sequence entries can be found.
+   */
   bool HasNextEntry();
 
-  ReadBuffer read_buffer_;
-
  private:
+
+  ReadBuffer read_buffer_;
 
   /*
    * Get the next FASTA header in the buffer.
