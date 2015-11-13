@@ -25,8 +25,8 @@ ReadBuffer::ReadBuffer(const size_t buffer_size, const std::string &file) :
   buffer_size_(buffer_size),
   input_stream_(),
   buffer_(new char[buffer_size]),
-  file_pos_(0),
-  file_len_()
+  buffer_pos_(0),
+  file_size_()
 {
   input_stream_.rdbuf()->pubsetbuf(0, 0);
   input_stream_.open(file, std::ifstream::in);
@@ -46,32 +46,32 @@ ReadBuffer::~ReadBuffer() {
 
 void ReadBuffer::GetFileSize() {
   input_stream_.seekg(0, input_stream_.end);
-  file_len_ = input_stream_.tellg();
+  file_size_ = input_stream_.tellg();
   input_stream_.seekg(0, input_stream_.beg);
 }
 
 void ReadBuffer::LoadBuffer() {
   input_stream_.read(buffer_, buffer_size_);
 
-  file_pos_ = 0;
+  buffer_pos_ = 0;
 }
 
 char ReadBuffer::GetChar() {
-  if (file_pos_ == buffer_size_) {
+  if (buffer_pos_ == buffer_size_) {
     LoadBuffer();
   }
 
-  if (file_len_-- == 0)
+  if (file_size_-- == 0)
     return '\0';
 
-  return buffer_[file_pos_++];
+  return buffer_[buffer_pos_++];
 }
 
 void ReadBuffer::Rewind(size_t len) {
-  file_pos_ -= len;
-  file_len_ += len;
+  buffer_pos_ -= len;
+  file_size_  += len;
 }
 
 bool ReadBuffer::Eof() {
-  return file_len_ <= 0;
+  return file_size_ <= 0;
 }
