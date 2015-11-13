@@ -28,49 +28,34 @@
 #include <iostream>
 
 #include <BioIO/seq_entry.h>
+#include <BioIO/read_buffer.h>
 
-/**
- * @brief Exception thrown by Fasta class
- */
-class FastaException : public std::exception {
-  public:
-    FastaException(const std::string& msg, int code = 0) :
-      exceptionMsg(msg), errorCode(code) {}
-    FastaException(const FastaException& e) :
-      exceptionMsg(e.exceptionMsg), errorCode(e.errorCode) {}
-    FastaException(FastaException&& e) :
-      exceptionMsg(std::move(e.exceptionMsg)), errorCode(e.errorCode) {}
-
-    virtual const char* what() const throw() { return exceptionMsg.c_str(); }
-
-    const std::string exceptionMsg;
-    int errorCode; // Mostly used for tests
-};
+static const size_t kBufferSize = 640 * 1024;
 
 class FastaReader
 {
-  public:
-    static const uint8_t ignore_content_before_first_header = 0x01;
+ public:
+  FastaReader(const std::string &file);
 
-  public:
-    FastaReader(const FastaReader&) = delete;
-    FastaReader& operator=(const FastaReader&) = delete;
-    FastaReader(FastaReader&&) = delete;
+  ~FastaReader();
 
-    FastaReader(const std::string& file_path, int errorToleranceLevel = 0);
+  std::unique_ptr<SeqEntry> NextEntry();
 
-    virtual ~FastaReader();
+  bool HasNextEntry();
 
-    std::unique_ptr<SeqEntry> nextEntry();
+  ReadBuffer read_buffer_;
 
-    bool hasNextEntry() const;
+ private:
 
-  private:
-    std::ifstream input_stream_;
-    std::string   next_header_;
-    int           error_tolerance_flags_;
+  /*
+   * Get the next FASTA header in the buffer.
+   */
+  void GetName(std::unique_ptr<SeqEntry> &seq_entry);
 
-    std::istream& windowsSafeGetLine(std::istream& is, std::string& str);
+  /*
+   * Get the next FASTA sequence in the buffer.
+   */
+  void GetSeq(std::unique_ptr<SeqEntry> &seq_entry);
 };
 
 #endif  // BIOIO_FASTA_READER_H_
