@@ -99,7 +99,3 @@ std::unique_ptr<SeqEntry> FastaReader::nextEntry() {
 bool FastaReader::hasNextEntry() const {
   return result != NULL;
 }
-
-inline void FastaReader::toLine(char* cstr) {
-    (*strchr(cstr, '\n')) = 0;
-}

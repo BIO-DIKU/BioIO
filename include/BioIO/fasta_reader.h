@@ -74,7 +74,6 @@ class FastaReader
     int           error_tolerance_flags_;
 
     std::istream& windowsSafeGetLine(std::istream& is, std::string& str);
-    void toLine(char* cstr);
 };
 
 #endif  // BIOIO_FASTA_READER_H_
