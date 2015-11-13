@@ -66,3 +66,12 @@ char ReadBuffer::GetChar() {
 
   return buffer_[file_pos_++];
 }
+
+void ReadBuffer::Rewind(size_t len) {
+  file_pos_ -= len;
+  file_len_ += len;
+}
+
+bool ReadBuffer::Eof() {
+  return file_len_ <= 0;
+}
