@@ -25,6 +25,31 @@
 #include <fstream>
 #include <iostream>
 
+/**
+ * @brief Exception class for ReadBuffer class.
+ *
+ * @example
+ *   std::string msg = "Exception message";
+ *   throw ReadBufferException(msg);
+ *
+ * @example
+ *   throw ReadBufferException("Exception message");
+ */
+class ReadBufferException : public std::exception {
+ public:
+  ReadBufferException(std::string &msg) :
+    exceptionMsg(msg)
+  {}
+
+  ReadBufferException(const ReadBufferException &e) :
+    exceptionMsg(e.exceptionMsg)
+  {}
+
+  virtual const char* what() const throw() { return exceptionMsg.c_str(); }
+
+  const std::string exceptionMsg;
+};
+
 class ReadBuffer
 {
  public:

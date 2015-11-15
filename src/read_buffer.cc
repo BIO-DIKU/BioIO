@@ -33,7 +33,7 @@ ReadBuffer::ReadBuffer(const size_t buffer_size, const std::string &file) :
 
   if (!input_stream_.good()) {
     std::string msg("File not found or not readable: " + file);
-    // throw
+    throw ReadBufferException(msg);
   }
 
   GetFileSize();
