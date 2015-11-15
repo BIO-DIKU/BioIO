@@ -36,6 +36,14 @@ FastaReader::FastaReader(const std::string& file_path, int error_tolerance_flags
   // read and ignore until first occurring '>' character
   input_stream_.ignore(std::numeric_limits<std::streamsize>::max(), '>');
 
+  // check for content before first header
+  if (input_stream_.gcount() > 1 && // read more than initial '>' char
+      !(error_tolerance_flags_ & ignore_content_before_first_header)) {
+    std::string msg("Bad FASTA format: Contents before first header. Line: \""
+                      + next_header_ + "\"");
+    throw FastaException(msg, 2);
+  }
+
   // '>' character was not read if either stream fails or reaches EOF
   if (input_stream_.fail() || input_stream_.eof()) {
     std::string msg("Bad FASTA format: No header found.");
