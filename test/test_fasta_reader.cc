@@ -23,27 +23,29 @@
 #include "catch.hpp"
 #include <BioIO/bioio.h>
 
-TEST_CASE("Read 9 fasta files", "[fasta_reader]") {
-  std::string filename1 = "fasta_test_files/test1.fasta";
-//   std::string filename2 = "fasta_test_files/test2.fasta";
-//   std::string filename3 = "fasta_test_files/test3.fasta";
-//   std::string filename4 = "fasta_test_files/test4.fasta";
-//   std::string filename5 = "fasta_test_files/test5.fasta";
-//   std::string filename6 = "fasta_test_files/test6.fasta";
-//   std::string filename7 = "fasta_test_files/test7.fasta";
-//   std::string filename8 = "fasta_test_files/test8.fasta";
-//   std::string filename9 = "fasta_test_files/test9.fasta";
-//
-  SECTION("Test with test1.fasta") {
-    FastaReader reader(filename1);
+std::string filename3 = "fasta_test_files/test3.fasta";
+std::string filename4 = "fasta_test_files/test4.fasta";
+std::string filename5 = "fasta_test_files/test5.fasta";
+std::string filename6 = "fasta_test_files/test6.fasta";
+std::string filename7 = "fasta_test_files/test7.fasta";
+std::string filename8 = "fasta_test_files/test8.fasta";
+std::string filename9 = "fasta_test_files/test9.fasta";
 
+TEST_CASE("FastaReader w. OK entries", "[fasta_reader]") {
+  std::string filename1 = "fasta_test_files/test1.fasta";
+
+  FastaReader reader(filename1);
+
+  SECTION("First entry is read OK") {
     REQUIRE(reader.HasNextEntry());
 
     auto entry1 = reader.NextEntry();
 
     REQUIRE(entry1->name() == "1 K#Bacteria;P#Proteobacteria");
     REQUIRE(entry1->seq() == "ATCGUatcgu");
+  }
 
+  SECTION("Second entry is read OK") {
     REQUIRE(reader.HasNextEntry());
 
     auto entry2 = reader.NextEntry();
@@ -52,38 +54,45 @@ TEST_CASE("Read 9 fasta files", "[fasta_reader]") {
 
     REQUIRE_FALSE(reader.HasNextEntry());
   }
+
+TEST_CASE("FastaReader w. OK entries with extra whitespace", "[fasta_reader]") {
+  std::string filename2 = "fasta_test_files/test2.fasta";
+  FastaReader reader(filename2);
+
+  SECTION("First entry is read OK and whitespace is stripped") {
+    REQUIRE(reader.HasNextEntry());
+
+    auto entry1 = reader.NextEntry();
+    REQUIRE(entry1->name() == "1");
+    REQUIRE(entry1->seq() == "atcgATCG");
+  }
+
+  SECTION("Second entry is read OK and whitespace is stripped") {
+    REQUIRE(reader.HasNextEntry());
+
+    auto entry2 = reader.NextEntry();
+    REQUIRE(entry2->name() == "2");
+    REQUIRE(entry2->seq() == "atcg");
+
+    REQUIRE_FALSE(reader.HasNextEntry());
+  }
 }
-//
-//   SECTION("Test with test2.fasta") {
-//     FastaReader reader(filename2);
-//
-//     REQUIRE(reader.HasNextEntry());
-//
-//     auto entry1 = reader.NextEntry();
-//     REQUIRE(entry1->name() == "1");
-//     REQUIRE(entry1->seq() == "atcgATCG");
-//
-//     REQUIRE(reader.HasNextEntry());
-//
-//     auto entry2 = reader.NextEntry();
-//     REQUIRE(entry2->name() == "2");
-//     REQUIRE(entry2->seq() == "atcg");
-//
-//     REQUIRE_FALSE(reader.HasNextEntry());
-//   }
-//
-//   SECTION("Test with test3.fasta") {
-//     FastaReader reader(filename3);
-//
-//     REQUIRE(reader.HasNextEntry());
-//
-//     auto entry1 = reader.NextEntry();
-//     REQUIRE(entry1->name() == "1>2");
-//     REQUIRE(entry1->seq() == "AT>CG");
-//
-//     REQUIRE_FALSE(reader.HasNextEntry());
-//   }
-//
+
+TEST_CASE("FastaReader w. OK entries with extra whitespace", "[fasta_reader]") {
+  SECTION("Test with test3.fasta") {
+    FastaReader reader(filename3);
+
+    REQUIRE(reader.HasNextEntry());
+
+    REQUIRE_THROWS_AS(reader.NextEntry(), FastaReaderException);
+
+    auto entry1 = reader.NextEntry();
+    REQUIRE(entry1->name() == "1>2");
+    REQUIRE(entry1->seq() == "AT>CG");
+
+    REQUIRE_FALSE(reader.HasNextEntry());
+  }
+}
 //   SECTION("Test with test4.fasta") {
 //     FastaReader reader(filename4);
 //
