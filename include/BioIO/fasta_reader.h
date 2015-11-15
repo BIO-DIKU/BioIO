@@ -66,7 +66,9 @@ class FastaReader
   /*
    * Return true on \n or \r.
    */
-  void isendl(const char);
+  inline bool isendl(const char c) {
+    return (c == '\n') || (c == '\r');
+  }
 };
 
 #endif  // BIOIO_FASTA_READER_H_

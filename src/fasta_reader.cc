@@ -52,7 +52,7 @@ void FastaReader::GetName(std::unique_ptr<SeqEntry> &seq_entry) {
 
   while ((c = read_buffer_.GetChar()) && (c != '>')) {}
 
-  while ((c = read_buffer_.GetChar()) && (c != '\n') && (c != '\r')) {
+  while ((c = read_buffer_.GetChar()) && !isendl(c)) {
     name += c;
   }
 

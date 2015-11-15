@@ -89,8 +89,6 @@ TEST_CASE("FastaReader w. OK entries with internal >", "[fasta_reader]") {
     auto entry1 = reader.NextEntry();
     REQUIRE(entry1->name() == "1>2");
     REQUIRE(entry1->seq() == "AT>CG");
-
-    REQUIRE(reader.HasNextEntry());
   }
 
   SECTION("Second entry with extra > is read OK") {
