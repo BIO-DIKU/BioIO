@@ -9,6 +9,8 @@ task all: %i(bioio seqtk kseq long short bm_seqtk bm_python bm_kseq plot)
 def time(file, &block)
   fail unless block
 
+  block.call # Pre-call to warm-up disk and mem.
+
   t1 = Time.now
   block.call
   t2 = Time.now
