@@ -21,7 +21,7 @@ end
 desc 'Build bioio'
 task :bioio do
   unless File.exist? 'bioio'
-    sh %(g++ -std=c++11 -I ../include/ bioio.cc ../libBioIO.a -o bioio)
+    sh %(g++ -std=c++11 -O3 -I ../include/ bioio.cc ../libBioIO.a -o bioio)
   end
 end
 
