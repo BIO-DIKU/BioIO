@@ -40,10 +40,13 @@ TEST_CASE("FastaReader w. OK entries", "[fasta_reader]") {
     REQUIRE(reader.HasNextEntry());
 
     auto entry1 = reader.NextEntry();
-
     REQUIRE(entry1->name() == "1 K#Bacteria;P#Proteobacteria");
     REQUIRE(entry1->seq() == "ATCGUatcgu");
+
+    REQUIRE(reader.HasNextEntry());
   }
+
+reader.NextEntry();
 
   SECTION("Second entry is read OK") {
     REQUIRE(reader.HasNextEntry());
@@ -66,7 +69,11 @@ TEST_CASE("FastaReader w. OK entries with extra whitespace", "[fasta_reader]") {
     auto entry1 = reader.NextEntry();
     REQUIRE(entry1->name() == "1");
     REQUIRE(entry1->seq() == "atcgATCG");
+
+    REQUIRE(reader.HasNextEntry());
   }
+
+  reader.NextEntry();
 
   SECTION("Second entry is read OK and whitespace is stripped") {
     REQUIRE(reader.HasNextEntry());
@@ -89,14 +96,18 @@ TEST_CASE("FastaReader w. OK entries with internal >", "[fasta_reader]") {
     auto entry1 = reader.NextEntry();
     REQUIRE(entry1->name() == "1>2");
     REQUIRE(entry1->seq() == "AT>CG");
+
+    REQUIRE(reader.HasNextEntry());
   }
+
+  reader.NextEntry();
 
   SECTION("Second entry with extra > is read OK") {
     REQUIRE(reader.HasNextEntry());
 
-    auto entry1 = reader.NextEntry();
-    REQUIRE(entry1->name() == "3>4");
-    REQUIRE(entry1->seq() == "cg>at");
+    auto entry2 = reader.NextEntry();
+    REQUIRE(entry2->name() == "3>4");
+    REQUIRE(entry2->seq() == "cg>ta");
 
     REQUIRE_FALSE(reader.HasNextEntry());
   }

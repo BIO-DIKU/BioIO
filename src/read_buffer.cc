@@ -56,7 +56,7 @@ void ReadBuffer::LoadBuffer() {
   buffer_pos_ = 0;
 }
 
-char ReadBuffer::GetChar() {
+char ReadBuffer::NextChar() {
   if (buffer_pos_ == buffer_size_) {
     LoadBuffer();
   }
@@ -65,6 +65,13 @@ char ReadBuffer::GetChar() {
     return '\0';
 
   return buffer_[buffer_pos_++];
+}
+
+char ReadBuffer::PrevChar() {
+  if (buffer_pos_ <= 1)
+    return '\0';
+
+  return buffer_[buffer_pos_ - 2];
 }
 
 void ReadBuffer::Rewind(size_t len) {

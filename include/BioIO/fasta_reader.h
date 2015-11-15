@@ -69,6 +69,13 @@ class FastaReader
   inline bool isendl(const char c) {
     return (c == '\n') || (c == '\r');
   }
+
+  /*
+   * Return true if valid sequence, that is printable chars except whitespace.
+   */
+  inline bool isseq(const char c) {
+    return (c >= 33 && c <= 126);
+  }
 };
 
 #endif  // BIOIO_FASTA_READER_H_

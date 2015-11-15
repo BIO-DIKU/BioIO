@@ -50,9 +50,9 @@ void FastaReader::GetName(std::unique_ptr<SeqEntry> &seq_entry) {
   std::string name = "";
   char        c;
 
-  while ((c = read_buffer_.GetChar()) && (c != '>')) {}
+  while ((c = read_buffer_.NextChar()) && (c != '>')) {}
 
-  while ((c = read_buffer_.GetChar()) && !isendl(c)) {
+  while ((c = read_buffer_.NextChar()) && !isendl(c)) {
     name += c;
   }
 
@@ -63,8 +63,12 @@ void FastaReader::GetSeq(std::unique_ptr<SeqEntry> &seq_entry) {
   std::string seq = "";
   char        c;
 
-  while ((c = read_buffer_.GetChar()) && (c != '>')) {
-    if (isalpha(c)) {
+  while ((c = read_buffer_.NextChar())) {
+    if (c == '>' && isendl(read_buffer_.PrevChar())) {
+      break;
+    }
+
+    if (isseq(c)) {
       seq += c;
     }
   }

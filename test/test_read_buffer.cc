@@ -25,41 +25,53 @@
 
 using namespace std;
 
-TEST_CASE("GetChar returns OK", "[read_buffer]") {
+TEST_CASE("ReadBuffer", "[read_buffer]") {
   string file = "file";
 
   ofstream output;
   output.open(file);
-  output << "foo"  << endl;
+  output << "fox"  << endl;
   output << "barz" << endl;
   output.close();
 
-  string expected = "foo\nbarz\n";
+  string expected = "fox\nbarz\n";
 
-  SECTION("with small buffer") {
+  SECTION("NextChar with small buffer") {
     string result   = "";
     ReadBuffer rb(2, file);
 
     char c;
 
-    while ((c = rb.GetChar())) {
+    while ((c = rb.NextChar())) {
       result += c;
     }
 
     REQUIRE(expected == result);
   }
 
-  SECTION("with large buffer") {
+  SECTION("NextChar with large buffer") {
     string result   = "";
     ReadBuffer rb(20, file);
 
     char c;
 
-    while ((c = rb.GetChar())) {
+    while ((c = rb.NextChar())) {
       result += c;
     }
 
     REQUIRE(expected == result);
+  }
+
+  SECTION("PrevChar returns OK") {
+    char c1, c2;
+
+    ReadBuffer rb(20, file);
+
+    REQUIRE_FALSE(rb.PrevChar());
+    c1 = rb.NextChar();
+    REQUIRE_FALSE(rb.PrevChar());
+    c2 = rb.NextChar();
+    REQUIRE(rb.PrevChar() == c1);
   }
 
   remove(file.c_str());

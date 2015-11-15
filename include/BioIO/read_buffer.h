@@ -35,7 +35,12 @@ class ReadBuffer
   /*
    * Get the next char from the read buffer.
    */
-  char GetChar();
+  char NextChar();
+
+  /*
+   * Get the previous char from the read buffer.
+   */
+  char PrevChar();
 
   /*
    * Rewind the ReadBuffer with len chars.
