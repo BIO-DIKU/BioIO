@@ -32,6 +32,31 @@
 
 static const size_t kBufferSize = 640 * 1024;
 
+/**
+ * @brief Exception class for FastaReader class.
+ *
+ * @example
+ *   std::string msg = "Exception message";
+ *   throw FastaReaderException(msg);
+ *
+ * @example
+ *   throw FastaReaderException("Exception message");
+ */
+class FastaReaderException : public std::exception {
+ public:
+  FastaReaderException(std::string &msg) :
+    exceptionMsg(msg)
+  {}
+
+  FastaReaderException(const FastaReaderException &e) :
+    exceptionMsg(e.exceptionMsg)
+  {}
+
+  virtual const char* what() const throw() { return exceptionMsg.c_str(); }
+
+  const std::string exceptionMsg;
+};
+
 class FastaReader
 {
  public:

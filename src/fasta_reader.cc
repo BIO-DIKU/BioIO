@@ -39,6 +39,11 @@ std::unique_ptr<SeqEntry> FastaReader::NextEntry() {
   GetName(seq_entry);
   GetSeq(seq_entry);
 
+  if (seq_entry->name().empty()) {
+    std::string msg = "Error: missing sequence name";
+    throw FastaReaderException(msg);
+  }
+
   return seq_entry;
 }
 
@@ -50,7 +55,11 @@ void FastaReader::GetName(std::unique_ptr<SeqEntry> &seq_entry) {
   std::string name = "";
   char        c;
 
-  while ((c = read_buffer_.NextChar()) && (c != '>')) {}
+  while ((c = read_buffer_.NextChar()) && (c != '>')) {
+    // std::string err_msg = ""
+    //
+    // throw FastaReaderException(msg);
+  }
 
   while ((c = read_buffer_.NextChar()) && !isendl(c)) {
     name += c;

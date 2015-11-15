@@ -23,7 +23,6 @@
 #include "catch.hpp"
 #include <BioIO/bioio.h>
 
-std::string file3 = "fasta_test_files/test3.fasta";
 std::string file4 = "fasta_test_files/test4.fasta";
 std::string file5 = "fasta_test_files/test5.fasta";
 std::string file6 = "fasta_test_files/test6.fasta";
@@ -113,22 +112,22 @@ TEST_CASE("FastaReader w. OK entries with internal >", "[fasta_reader]") {
   }
 }
 
-//    REQUIRE_THROWS_AS(reader.NextEntry(), FastaReaderException);
+TEST_CASE("FastaReader w. missing sequence name throws", "[fasta_reader]") {
+  std::string file = "fasta_test_files/test4.fasta";
+  FastaReader reader(file);
 
-//   SECTION("Test with test4.fasta") {
-//     FastaReader reader(file4);
-//
-//     REQUIRE(reader.HasNextEntry());
-//
-//     try {
-//       reader.NextEntry();
-//       FAIL("reader did not throw expected exception");
-//     }
-//     catch (FastaException& e) {
-//       REQUIRE(e.errorCode == 3);
-//     }
-//   }
-//
+  REQUIRE(reader.HasNextEntry());
+
+  try {
+    reader.NextEntry();
+    FAIL("reader.NextEntry() did not throw expected exception");
+  }
+
+  catch (FastaReaderException& e) {
+    REQUIRE(e.exceptionMsg == "Error: missing sequence name");
+  }
+}
+
 //   SECTION("Test with test5.fasta") {
 //     FastaReader reader(file5);
 //
