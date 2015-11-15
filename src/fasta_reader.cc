@@ -65,6 +65,7 @@ void FastaReader::GetSeq(std::unique_ptr<SeqEntry> &seq_entry) {
 
   while ((c = read_buffer_.NextChar())) {
     if (c == '>' && isendl(read_buffer_.PrevChar())) {
+      read_buffer_.Rewind(1);
       break;
     }
 
@@ -72,8 +73,6 @@ void FastaReader::GetSeq(std::unique_ptr<SeqEntry> &seq_entry) {
       seq += c;
     }
   }
-
-  read_buffer_.Rewind(1);
 
   seq_entry->set_seq(seq);
 }
