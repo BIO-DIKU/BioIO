@@ -32,7 +32,7 @@ ReadBuffer::ReadBuffer(const size_t buffer_size, const std::string &file) :
   input_stream_.open(file, std::ifstream::in);
 
   if (!input_stream_.good()) {
-    std::string msg("File not found or not readable: " + file);
+    std::string msg("Error: File not found or not readable: " + file);
     throw ReadBufferException(msg);
   }
 

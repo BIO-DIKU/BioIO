@@ -149,7 +149,7 @@ TEST_CASE("FastaReader w. missing header throws", "[fasta_reader]") {
   }
 
   catch (FastaReaderException& e) {
-    REQUIRE(e.exceptionMsg == "Error: missing sequence name");
+    REQUIRE(e.exceptionMsg == "Error: File not in FASTA format");
   }
 }
 
@@ -234,8 +234,24 @@ TEST_CASE("FastaReader w. missing file throws", "[fasta_reader]") {
 
     FAIL("Reader did not throw expected exception");
   }
-  //catch (FastaReaderException& e) {  // FIXME:(Martin) Figure out inheritage ...
+  // catch (FastaReaderException& e) {  // FIXME:(Martin) Figure out inheritage
   catch (ReadBufferException& e) {
-    REQUIRE(e.exceptionMsg == "File not found or not readable: blefh");
+    REQUIRE(e.exceptionMsg == "Error: File not found or not readable: blefh");
+  }
+}
+
+TEST_CASE("FastaReader w. non-FASTA content throws", "[fasta_reader]") {
+  std::string file = "test/fasta_files/test11.fasta";
+  FastaReader reader(file);
+
+  REQUIRE(reader.HasNextEntry());
+
+  try {
+    reader.NextEntry();
+
+    FAIL("Reader did not throw expected exception");
+  }
+  catch (FastaReaderException& e) {
+    REQUIRE(e.exceptionMsg == "Error: File not in FASTA format");
   }
 }

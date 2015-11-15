@@ -51,9 +51,11 @@ void FastaReader::GetName(std::unique_ptr<SeqEntry> &seq_entry) {
   char        c;
 
   while ((c = read_buffer_.NextChar()) && (c != '>')) {
-    // std::string err_msg = ""
-    //
-    // throw FastaReaderException(msg);
+    if (isalpha(c)) {
+      std::string msg = "Error: File not in FASTA format";
+
+      throw FastaReaderException(msg);
+    }
   }
 
   while ((c = read_buffer_.NextChar()) && !isendl(c)) {
