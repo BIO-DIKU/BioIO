@@ -62,6 +62,11 @@ class FastaReader
    * Get the next FASTA sequence in the buffer.
    */
   void GetSeq(std::unique_ptr<SeqEntry> &seq_entry);
+
+  /*
+   * Return true on \n or \r.
+   */
+  void isendl(const char);
 };
 
 #endif  // BIOIO_FASTA_READER_H_

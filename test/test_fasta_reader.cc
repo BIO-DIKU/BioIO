@@ -23,18 +23,18 @@
 #include "catch.hpp"
 #include <BioIO/bioio.h>
 
-std::string filename3 = "fasta_test_files/test3.fasta";
-std::string filename4 = "fasta_test_files/test4.fasta";
-std::string filename5 = "fasta_test_files/test5.fasta";
-std::string filename6 = "fasta_test_files/test6.fasta";
-std::string filename7 = "fasta_test_files/test7.fasta";
-std::string filename8 = "fasta_test_files/test8.fasta";
-std::string filename9 = "fasta_test_files/test9.fasta";
+std::string file3 = "fasta_test_files/test3.fasta";
+std::string file4 = "fasta_test_files/test4.fasta";
+std::string file5 = "fasta_test_files/test5.fasta";
+std::string file6 = "fasta_test_files/test6.fasta";
+std::string file7 = "fasta_test_files/test7.fasta";
+std::string file8 = "fasta_test_files/test8.fasta";
+std::string file9 = "fasta_test_files/test9.fasta";
 
 TEST_CASE("FastaReader w. OK entries", "[fasta_reader]") {
-  std::string filename1 = "fasta_test_files/test1.fasta";
+  std::string file = "fasta_test_files/test1.fasta";
 
-  FastaReader reader(filename1);
+  FastaReader reader(file);
 
   SECTION("First entry is read OK") {
     REQUIRE(reader.HasNextEntry());
@@ -54,10 +54,11 @@ TEST_CASE("FastaReader w. OK entries", "[fasta_reader]") {
 
     REQUIRE_FALSE(reader.HasNextEntry());
   }
+}
 
 TEST_CASE("FastaReader w. OK entries with extra whitespace", "[fasta_reader]") {
-  std::string filename2 = "fasta_test_files/test2.fasta";
-  FastaReader reader(filename2);
+  std::string file = "fasta_test_files/test2.fasta";
+  FastaReader reader(file);
 
   SECTION("First entry is read OK and whitespace is stripped") {
     REQUIRE(reader.HasNextEntry());
@@ -78,23 +79,35 @@ TEST_CASE("FastaReader w. OK entries with extra whitespace", "[fasta_reader]") {
   }
 }
 
-TEST_CASE("FastaReader w. OK entries with extra whitespace", "[fasta_reader]") {
-  SECTION("Test with test3.fasta") {
-    FastaReader reader(filename3);
+TEST_CASE("FastaReader w. OK entries with internal >", "[fasta_reader]") {
+  std::string file = "fasta_test_files/test3.fasta";
+  FastaReader reader(file);
 
+  SECTION("First entry with extra > is read OK") {
     REQUIRE(reader.HasNextEntry());
-
-    REQUIRE_THROWS_AS(reader.NextEntry(), FastaReaderException);
 
     auto entry1 = reader.NextEntry();
     REQUIRE(entry1->name() == "1>2");
     REQUIRE(entry1->seq() == "AT>CG");
 
+    REQUIRE(reader.HasNextEntry());
+  }
+
+  SECTION("Second entry with extra > is read OK") {
+    REQUIRE(reader.HasNextEntry());
+
+    auto entry1 = reader.NextEntry();
+    REQUIRE(entry1->name() == "3>4");
+    REQUIRE(entry1->seq() == "cg>at");
+
     REQUIRE_FALSE(reader.HasNextEntry());
   }
 }
+
+//    REQUIRE_THROWS_AS(reader.NextEntry(), FastaReaderException);
+
 //   SECTION("Test with test4.fasta") {
-//     FastaReader reader(filename4);
+//     FastaReader reader(file4);
 //
 //     REQUIRE(reader.HasNextEntry());
 //
@@ -108,7 +121,7 @@ TEST_CASE("FastaReader w. OK entries with extra whitespace", "[fasta_reader]") {
 //   }
 //
 //   SECTION("Test with test5.fasta") {
-//     FastaReader reader(filename5);
+//     FastaReader reader(file5);
 //
 //     REQUIRE(reader.HasNextEntry());
 //
@@ -123,7 +136,7 @@ TEST_CASE("FastaReader w. OK entries with extra whitespace", "[fasta_reader]") {
 //
 //   SECTION("Test with test6.fasta") {
 //     try {
-//       FastaReader reader(filename6);
+//       FastaReader reader(file6);
 //       FAIL("reader did not throw expected exception");
 //     }
 //     catch (FastaException& e) {
@@ -132,7 +145,7 @@ TEST_CASE("FastaReader w. OK entries with extra whitespace", "[fasta_reader]") {
 //   }
 //
 //   SECTION("Test with test7.fasta") {
-//     FastaReader reader(filename7);
+//     FastaReader reader(file7);
 //
 //     REQUIRE(reader.HasNextEntry());
 //
@@ -147,7 +160,7 @@ TEST_CASE("FastaReader w. OK entries with extra whitespace", "[fasta_reader]") {
 //
 //   SECTION("Test with test8.fasta") {
 //     try {
-//       FastaReader reader(filename8);
+//       FastaReader reader(file8);
 //       FAIL("reader did not throw expected exception");
 //     }
 //     catch (FastaException& e) {
@@ -156,7 +169,7 @@ TEST_CASE("FastaReader w. OK entries with extra whitespace", "[fasta_reader]") {
 //   }
 //
 //   SECTION("Test with test9.fasta") {
-//     FastaReader reader(filename9);
+//     FastaReader reader(file9);
 //
 //     REQUIRE(reader.HasNextEntry());
 //
