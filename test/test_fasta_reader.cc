@@ -128,20 +128,22 @@ TEST_CASE("FastaReader w. missing sequence name throws", "[fasta_reader]") {
   }
 }
 
-//   SECTION("Test with test5.fasta") {
-//     FastaReader reader(file5);
-//
-//     REQUIRE(reader.HasNextEntry());
-//
-//     try {
-//       reader.NextEntry();
-//       FAIL("reader.NextEntry() did not throw expected exception");
-//     }
-//     catch (FastaException& e) {
-//       REQUIRE(e.errorCode == 4);
-//     }
-//   }
-//
+TEST_CASE("FastaReader w. missing sequence throws", "[fasta_reader]") {
+  std::string file = "fasta_test_files/test5.fasta";
+  FastaReader reader(file);
+
+  REQUIRE(reader.HasNextEntry());
+
+  try {
+    reader.NextEntry();
+    FAIL("reader.NextEntry() did not throw expected exception");
+  }
+
+  catch (FastaReaderException& e) {
+    REQUIRE(e.exceptionMsg == "Error: missing sequence");
+  }
+}
+
 //   SECTION("Test with test6.fasta") {
 //     try {
 //       FastaReader reader(file6);
