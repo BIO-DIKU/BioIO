@@ -30,7 +30,24 @@
 #include <BioIO/seq_entry.h>
 #include <BioIO/read_buffer.h>
 
-static const size_t kBufferSize = 640 * 1024;
+/*
+ * Size of custom buffer used to read from a FASTA file a chunk of data this size
+ */
+static const auto kBufferSize  = 640 * 1024;
+
+/*
+ * Size of sequence name buffer used to temporary store the sequence name while
+ * parsing a FASTA file. The size of this buffer is determined by kMaxNameSize,
+ * which must be larger than the longest name or undefined things will happen.
+*/
+static const auto kMaxNameSize = 1024;
+
+/*
+ * Size of sequence buffer used to temporary store the sequence  while parsing
+ * a FASTA file. The size of this buffer is determined by kMaxSeqSize, which
+ * must be larger than the longest sequence or undefined things will happen.
+ */
+static const auto kMaxSeqSize  = 300000000;
 
 /**
  * @brief Exception class for FastaReader class.
@@ -77,6 +94,16 @@ class FastaReader
  private:
 
   ReadBuffer read_buffer_;
+
+  /*
+   * Temporary buffer for collecting a read name.
+   */
+  char *name_buffer_;
+
+  /*
+   * Temporary buffer for collecting a read sequence.
+   */
+  char *seq_buffer_;
 
   /*
    * Get the next FASTA header in the buffer.

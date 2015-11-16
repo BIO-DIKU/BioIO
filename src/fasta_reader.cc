@@ -22,12 +22,13 @@
 #include <BioIO/read_buffer.h>
 
 #include <sstream>
-#include <algorithm>
 #include <iostream>
 #include <string>
 
 FastaReader::FastaReader(const std::string &file) :
-  read_buffer_(kBufferSize, file)
+  read_buffer_(kBufferSize, file),
+  name_buffer_(new char[kMaxNameSize]),
+  seq_buffer_(new char[kMaxSeqSize])
 {}
 
 FastaReader::~FastaReader()
@@ -47,8 +48,8 @@ bool FastaReader::HasNextEntry() {
 }
 
 void FastaReader::GetName(std::unique_ptr<SeqEntry> &seq_entry) {
-  std::string name = "";
-  char        c;
+  int  name_index = 0;
+  char c;
 
   while ((c = read_buffer_.NextChar()) && (c != '>')) {
     if (isalpha(c)) {
@@ -59,20 +60,20 @@ void FastaReader::GetName(std::unique_ptr<SeqEntry> &seq_entry) {
   }
 
   while ((c = read_buffer_.NextChar()) && !isendl(c)) {
-    name += c;
+    name_buffer_[name_index++] = c;
   }
 
-  if (name.empty()) {
+  if (!name_index) {
     std::string msg = "Error: missing sequence name";
     throw FastaReaderException(msg);
   }
 
-  seq_entry->set_name(name);
+  seq_entry->set_name(std::string(name_buffer_, name_index));
 }
 
 void FastaReader::GetSeq(std::unique_ptr<SeqEntry> &seq_entry) {
-  std::string seq = "";
-  char        c;
+  int  seq_index = 0;
+  char c;
 
   while ((c = read_buffer_.NextChar())) {
     if (c == '>' && isendl(read_buffer_.PrevChar())) {
@@ -81,14 +82,14 @@ void FastaReader::GetSeq(std::unique_ptr<SeqEntry> &seq_entry) {
     }
 
     if (isseq(c)) {
-      seq += c;
+      seq_buffer_[seq_index++] = c;
     }
   }
 
-  if (seq.empty()) {
+  if (!seq_index) {
     std::string msg = "Error: missing sequence";
     throw FastaReaderException(msg);
   }
 
-  seq_entry->set_seq(seq);
+  seq_entry->set_seq(std::string(seq_buffer_, seq_index));
 }
