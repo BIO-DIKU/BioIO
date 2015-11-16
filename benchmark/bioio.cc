@@ -23,6 +23,8 @@
 #include <iostream>
 
 int main(int argc, char** argv) {
+  std::ios_base::sync_with_stdio(false);
+
   if (argc > 1) {
     FastaReader reader(argv[1]);
 
