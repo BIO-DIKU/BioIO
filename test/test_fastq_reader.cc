@@ -234,33 +234,40 @@ TEST_CASE("FastqReader w. OK name and space only scores throws", "[fastq_reader]
   }
 }
 
-// TEST_CASE("FastqReader w. Windows line-endings are OK", "[fastq_reader]") {
-//   std::string file = "test/fastq_files/test10.fastq";
-//   FastqReader reader(file);
-//
-//   SECTION("First entry is read OK and whitespace is stripped") {
-//     REQUIRE(reader.HasNextEntry());
-//
-//     auto entry1 = reader.NextEntry();
-//     REQUIRE(entry1->name() == "1");
-//     REQUIRE(entry1->seq() == "atcgATCG");
-//
-//     REQUIRE(reader.HasNextEntry());
-//   }
-//
-//   reader.NextEntry();
-//
-//   SECTION("Second entry is read OK and whitespace is stripped") {
-//     REQUIRE(reader.HasNextEntry());
-//
-//     auto entry2 = reader.NextEntry();
-//     REQUIRE(entry2->name() == "2");
-//     REQUIRE(entry2->seq() == "atcg");
-//
-//     REQUIRE_FALSE(reader.HasNextEntry());
-//   }
-// }
-//
+TEST_CASE("FastqReader w. Windows line-endings are OK", "[fastq_reader]") {
+  std::string file = "test/fastq_files/test11.fastq";
+  FastqReader reader(file);
+
+  SECTION("First entry is read OK") {
+    static const uint8_t scores[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+    const std::vector<uint8_t> v(scores, scores + sizeof(scores) / sizeof(scores[0]));
+
+    REQUIRE(reader.HasNextEntry());
+
+    auto entry1 = reader.NextEntry();
+    REQUIRE(entry1->name() == "test1");
+    REQUIRE(entry1->seq() == "ATCGUatcgu");
+    REQUIRE(entry1->scores() == v);
+
+    REQUIRE(reader.HasNextEntry());
+  }
+
+reader.NextEntry();
+
+  SECTION("Second entry is read OK") {
+    static const uint8_t scores[] = {36, 37, 38, 39, 40};
+    const std::vector<uint8_t> v(scores, scores + sizeof(scores) / sizeof(scores[0]));
+    REQUIRE(reader.HasNextEntry());
+
+    auto entry2 = reader.NextEntry();
+    REQUIRE(entry2->name() == "test2");
+    REQUIRE(entry2->seq() == "natcg");
+    REQUIRE(entry2->scores() == v);
+
+    REQUIRE_FALSE(reader.HasNextEntry());
+  }
+}
+
 // TEST_CASE("FastqReader w. missing file throws", "[fastq_reader]") {
 //   try {
 //     FastqReader reader("blefh");
