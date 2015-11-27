@@ -31,8 +31,10 @@ FastaReader::FastaReader(const std::string &file) :
   seq_buffer_(new char[kMaxSeqSize])
 {}
 
-FastaReader::~FastaReader()
-{}
+FastaReader::~FastaReader() {
+  delete[] name_buffer_;
+  delete[] seq_buffer_;
+}
 
 std::unique_ptr<SeqEntry> FastaReader::NextEntry() {
   std::unique_ptr<SeqEntry> seq_entry(new SeqEntry());
