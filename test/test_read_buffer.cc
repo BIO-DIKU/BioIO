@@ -63,14 +63,14 @@ TEST_CASE("ReadBuffer", "[read_buffer]") {
   }
 
   SECTION("PrevChar returns OK") {
-    char c1, c2;
+    char c1;
 
     ReadBuffer rb(20, file);
 
-    REQUIRE_FALSE(rb.PrevChar());
+    REQUIRE(rb.PrevChar() == '\0');
     c1 = rb.NextChar();
-    REQUIRE_FALSE(rb.PrevChar());
-    c2 = rb.NextChar();
+    REQUIRE(rb.PrevChar() == '\0');
+    rb.NextChar();
     REQUIRE(rb.PrevChar() == c1);
   }
 
