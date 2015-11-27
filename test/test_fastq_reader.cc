@@ -170,22 +170,22 @@ TEST_CASE("FastqReader w/o scores throws", "[fastq_reader]") {
   }
 }
 
-// TEST_CASE("FastqReader w. missing header throws", "[fastq_reader]") {
-//   std::string file = "test/fastq_files/test6.fastq";
-//   FastqReader reader(file);
-//
-//   REQUIRE(reader.HasNextEntry());
-//
-//   try {
-//     reader.NextEntry();
-//     FAIL("reader.NextEntry() did not throw expected exception");
-//   }
-//
-//   catch (FastqReaderException& e) {
-//     REQUIRE(e.exceptionMsg == "Error: File not in FASTA format");
-//   }
-// }
-//
+TEST_CASE("FastqReader w. missing header throws", "[fastq_reader]") {
+  std::string file = "test/fastq_files/test7.fastq";
+  FastqReader reader(file);
+
+  REQUIRE(reader.HasNextEntry());
+
+  try {
+    reader.NextEntry();
+    FAIL("reader.NextEntry() did not throw expected exception");
+  }
+
+  catch (FastqReaderException& e) {
+    REQUIRE(e.exceptionMsg == "Error: File not in FASTQ format");
+  }
+}
+
 // TEST_CASE("FastqReader w. missing sequence throws", "[fastq_reader]") {
 //   std::string file = "test/fastq_files/test7.fastq";
 //   FastqReader reader(file);
