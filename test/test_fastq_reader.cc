@@ -186,54 +186,54 @@ TEST_CASE("FastqReader w. missing header throws", "[fastq_reader]") {
   }
 }
 
-// TEST_CASE("FastqReader w. missing sequence throws", "[fastq_reader]") {
-//   std::string file = "test/fastq_files/test7.fastq";
-//   FastqReader reader(file);
-//
-//   REQUIRE(reader.HasNextEntry());
-//
-//   try {
-//     reader.NextEntry();
-//     FAIL("reader.NextEntry() did not throw expected exception");
-//   }
-//
-//   catch (FastqReaderException& e) {
-//     REQUIRE(e.exceptionMsg == "Error: missing sequence");
-//   }
-// }
-//
-// TEST_CASE("FastqReader w. empty file throws", "[fastq_reader]") {
-//   std::string file = "test/fastq_files/test8.fastq";
-//   FastqReader reader(file);
-//
-//   REQUIRE(reader.HasNextEntry());
-//
-//   try {
-//     reader.NextEntry();
-//     FAIL("reader.NextEntry() did not throw expected exception");
-//   }
-//
-//   catch (FastqReaderException& e) {
-//     REQUIRE(e.exceptionMsg == "Error: missing sequence name");
-//   }
-// }
-//
-// TEST_CASE("FastqReader w. OK name and space only seq throws", "[fastq_reader]") {
-//   std::string file = "test/fastq_files/test9.fastq";
-//   FastqReader reader(file);
-//
-//   REQUIRE(reader.HasNextEntry());
-//
-//   try {
-//     reader.NextEntry();
-//     FAIL("reader.NextEntry() did not throw expected exception");
-//   }
-//
-//   catch (FastqReaderException& e) {
-//     REQUIRE(e.exceptionMsg == "Error: missing sequence");
-//   }
-// }
-//
+TEST_CASE("FastqReader w. empty file throws", "[fastq_reader]") {
+  std::string file = "test/fastq_files/test8.fastq";
+  FastqReader reader(file);
+
+  REQUIRE(reader.HasNextEntry());
+
+  try {
+    reader.NextEntry();
+    FAIL("reader.NextEntry() did not throw expected exception");
+  }
+
+  catch (FastqReaderException& e) {
+    REQUIRE(e.exceptionMsg == "Error: missing sequence name");
+  }
+}
+
+TEST_CASE("FastqReader w. OK name and space only seq throws", "[fastq_reader]") {
+  std::string file = "test/fastq_files/test9.fastq";
+  FastqReader reader(file);
+
+  REQUIRE(reader.HasNextEntry());
+
+  try {
+    reader.NextEntry();
+    FAIL("reader.NextEntry() did not throw expected exception");
+  }
+
+  catch (FastqReaderException& e) {
+    REQUIRE(e.exceptionMsg == "Error: missing sequence");
+  }
+}
+
+TEST_CASE("FastqReader w. OK name and space only scores throws", "[fastq_reader]") {
+  std::string file = "test/fastq_files/test10.fastq";
+  FastqReader reader(file);
+
+  REQUIRE(reader.HasNextEntry());
+
+  try {
+    reader.NextEntry();
+    FAIL("reader.NextEntry() did not throw expected exception");
+  }
+
+  catch (FastqReaderException& e) {
+    REQUIRE(e.exceptionMsg == "Error: missing scores");
+  }
+}
+
 // TEST_CASE("FastqReader w. Windows line-endings are OK", "[fastq_reader]") {
 //   std::string file = "test/fastq_files/test10.fastq";
 //   FastqReader reader(file);
