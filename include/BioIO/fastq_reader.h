@@ -59,6 +59,7 @@ class FastqReader
 {
  public:
   FastqReader(const std::string &file);
+  FastqReader(const std::string &file, const int encoding);
 
   ~FastqReader();
 
@@ -73,6 +74,11 @@ class FastqReader
   bool HasNextEntry();
 
  private:
+  /*
+   * Default FASTQ score encoding.
+   */
+  static const auto kDefaultEncoding = 33;
+
   /*
    * Size of custom buffer used to read from a FASTQ file a chunk of data this size
    */
@@ -99,7 +105,15 @@ class FastqReader
    */
   static const auto kMaxScoresSize = 4096;
 
+  /*
+   * Temporary file reading buffer.
+   */
   ReadBuffer read_buffer_;
+
+  /*
+   * FASTQ score encoding.
+   */
+  size_t encoding_;
 
   /*
    * Temporary buffer for collecting sequence name.

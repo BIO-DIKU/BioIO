@@ -27,6 +27,15 @@
 
 FastqReader::FastqReader(const std::string &file) :
   read_buffer_(FastqReader::kBufferSize, file),
+  encoding_(kDefaultEncoding),
+  name_buffer_(new char[FastqReader::kMaxNameSize]),
+  seq_buffer_(new char[FastqReader::kMaxSeqSize]),
+  scores_buffer_(new char[FastqReader::kMaxScoresSize])
+{}
+
+FastqReader::FastqReader(const std::string &file, const int encoding) :
+  read_buffer_(FastqReader::kBufferSize, file),
+  encoding_(encoding),
   name_buffer_(new char[FastqReader::kMaxNameSize]),
   seq_buffer_(new char[FastqReader::kMaxSeqSize]),
   scores_buffer_(new char[FastqReader::kMaxScoresSize])
@@ -126,7 +135,7 @@ void FastqReader::GetScores(std::unique_ptr<SeqEntry> &seq_entry) {
   std::vector<uint8_t> scores(scores_index, 0);
 
   for (size_t i = 0; i < scores_index; ++i) {
-    scores[i] = scores_buffer_[i] - 33;  // FIXME(Martin) dont use constant
+    scores[i] = scores_buffer_[i] - encoding_;
   }
 
   seq_entry->set_scores(scores);

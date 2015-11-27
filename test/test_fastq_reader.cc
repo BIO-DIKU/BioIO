@@ -311,3 +311,37 @@ TEST_CASE("FastqReader w. non-equal length seq and scores throws", "[fastq_reade
     REQUIRE(e.exceptionMsg == "Error: Sequence length != scores length: 9 != 10");
   }
 }
+
+TEST_CASE("FastqReader w. base 64 encoding", "[fastq_reader]") {
+  std::string file = "test/fastq_files/test13.fastq";
+  FastqReader reader(file, 64);
+
+  SECTION("First entry is read OK") {
+    static const uint8_t scores[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+    const std::vector<uint8_t> v(scores, scores + sizeof(scores) / sizeof(scores[0]));
+
+    REQUIRE(reader.HasNextEntry());
+
+    auto entry1 = reader.NextEntry();
+    REQUIRE(entry1->name() == "test1");
+    REQUIRE(entry1->seq() == "ATCGUatcgu");
+    REQUIRE(entry1->scores() == v);
+
+    REQUIRE(reader.HasNextEntry());
+  }
+
+reader.NextEntry();
+
+  SECTION("Second entry is read OK") {
+    static const uint8_t scores[] = {36, 37, 38, 39, 40};
+    const std::vector<uint8_t> v(scores, scores + sizeof(scores) / sizeof(scores[0]));
+    REQUIRE(reader.HasNextEntry());
+
+    auto entry2 = reader.NextEntry();
+    REQUIRE(entry2->name() == "test2");
+    REQUIRE(entry2->seq() == "natcg");
+    REQUIRE(entry2->scores() == v);
+
+    REQUIRE_FALSE(reader.HasNextEntry());
+  }
+}
