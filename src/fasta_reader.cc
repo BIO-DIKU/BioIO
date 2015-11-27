@@ -32,7 +32,10 @@ FastaReader::FastaReader(const std::string &file) :
 {}
 
 FastaReader::~FastaReader()
-{}
+{
+  delete[] name_buffer_;
+  delete[] seq_buffer_;
+}
 
 std::unique_ptr<SeqEntry> FastaReader::NextEntry() {
   std::unique_ptr<SeqEntry> seq_entry(new SeqEntry());
