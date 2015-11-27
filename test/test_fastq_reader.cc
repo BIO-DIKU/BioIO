@@ -122,22 +122,22 @@ TEST_CASE("FastqReader w. OK entries with internal >", "[fastq_reader]") {
   }
 }
 
-// TEST_CASE("FastqReader w. only sequence throws", "[fastq_reader]") {
-//   std::string file = "test/fastq_files/test4.fastq";
-//   FastqReader reader(file);
-//
-//   REQUIRE(reader.HasNextEntry());
-//
-//   try {
-//     reader.NextEntry();
-//     FAIL("reader.NextEntry() did not throw expected exception");
-//   }
-//
-//   catch (FastqReaderException& e) {
-//     REQUIRE(e.exceptionMsg == "Error: missing sequence name");
-//   }
-// }
-//
+TEST_CASE("FastqReader w/o name throws", "[fastq_reader]") {
+  std::string file = "test/fastq_files/test4.fastq";
+  FastqReader reader(file);
+
+  REQUIRE(reader.HasNextEntry());
+
+  try {
+    reader.NextEntry();
+    FAIL("reader.NextEntry() did not throw expected exception");
+  }
+
+  catch (FastqReaderException& e) {
+    REQUIRE(e.exceptionMsg == "Error: missing sequence name");
+  }
+}
+
 // TEST_CASE("FastqReader w. only sequence name throws", "[fastq_reader]") {
 //   std::string file = "test/fastq_files/test5.fastq";
 //   FastqReader reader(file);
