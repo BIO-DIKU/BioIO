@@ -97,7 +97,7 @@ void FastqReader::GetSeq(std::unique_ptr<SeqEntry> &seq_entry) {
 }
 
 void FastqReader::GetScores(std::unique_ptr<SeqEntry> &seq_entry) {
-  int  scores_index = 0;
+  size_t scores_index = 0;
   char c;
 
   while ((c = read_buffer_.NextChar())) {
@@ -116,10 +116,17 @@ void FastqReader::GetScores(std::unique_ptr<SeqEntry> &seq_entry) {
     throw FastqReaderException(msg);
   }
 
+  if (seq_entry->Size() != scores_index) {
+    std::string msg = "Error: Sequence length != scores length: " +
+                      std::to_string(seq_entry->Size()) + " != " +
+                      std::to_string(scores_index);
+    throw FastqReaderException(msg);
+  }
+
   std::vector<uint8_t> scores(scores_index, 0);
 
-  for (int i = 0; i < scores_index; ++i) {
-    scores[i] = scores_buffer_[i] - 33;  // FIXME
+  for (size_t i = 0; i < scores_index; ++i) {
+    scores[i] = scores_buffer_[i] - 33;  // FIXME(Martin) dont use constant
   }
 
   seq_entry->set_scores(scores);

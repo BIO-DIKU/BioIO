@@ -268,30 +268,46 @@ reader.NextEntry();
   }
 }
 
-// TEST_CASE("FastqReader w. missing file throws", "[fastq_reader]") {
-//   try {
-//     FastqReader reader("blefh");
-//
-//     FAIL("Reader did not throw expected exception");
-//   }
-//   // catch (FastqReaderException& e) {  // FIXME:(Martin) Figure out inheritage
-//   catch (ReadBufferException& e) {
-//     REQUIRE(e.exceptionMsg == "Error: File not found or not readable: blefh");
-//   }
-// }
-//
-// TEST_CASE("FastqReader w. non-FASTA content throws", "[fastq_reader]") {
-//   std::string file = "test/fastq_files/test11.fastq";
-//   FastqReader reader(file);
-//
-//   REQUIRE(reader.HasNextEntry());
-//
-//   try {
-//     reader.NextEntry();
-//
-//     FAIL("Reader did not throw expected exception");
-//   }
-//   catch (FastqReaderException& e) {
-//     REQUIRE(e.exceptionMsg == "Error: File not in FASTA format");
-//   }
-// }
+TEST_CASE("FastqReader w. missing file throws", "[fastq_reader]") {
+  try {
+    FastqReader reader("blefh");
+
+    FAIL("Reader did not throw expected exception");
+  }
+  // catch (FastqReaderException& e) {  // FIXME:(Martin) Figure out inheritage
+  catch (ReadBufferException& e) {
+    REQUIRE(e.exceptionMsg == "Error: File not found or not readable: blefh");
+  }
+}
+
+TEST_CASE("FastqReader w. non-FASTQ content throws", "[fastq_reader]") {
+  std::string file = "test/fasta_files/test1.fasta";
+  FastqReader reader(file);
+
+  REQUIRE(reader.HasNextEntry());
+
+  try {
+    reader.NextEntry();
+
+    FAIL("Reader did not throw expected exception");
+  }
+  catch (FastqReaderException& e) {
+    REQUIRE(e.exceptionMsg == "Error: File not in FASTQ format");
+  }
+}
+
+TEST_CASE("FastqReader w. non-equal length seq and scores throws", "[fastq_reader]") {
+  std::string file = "test/fastq_files/test12.fastq";
+  FastqReader reader(file);
+
+  REQUIRE(reader.HasNextEntry());
+
+  try {
+    reader.NextEntry();
+
+    FAIL("Reader did not throw expected exception");
+  }
+  catch (FastqReaderException& e) {
+    REQUIRE(e.exceptionMsg == "Error: Sequence length != scores length: 9 != 10");
+  }
+}
