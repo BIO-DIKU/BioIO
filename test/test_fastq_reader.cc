@@ -25,7 +25,6 @@
 
 TEST_CASE("FastqReader w. OK entries", "[fastq_reader]") {
   std::string file = "test/fastq_files/test1.fastq";
-
   FastqReader reader(file);
 
   SECTION("First entry is read OK") {
@@ -43,10 +42,10 @@ TEST_CASE("FastqReader w. OK entries", "[fastq_reader]") {
   }
 
 reader.NextEntry();
-    static const uint8_t scores[] = {36, 37, 38, 39, 40};
-    const std::vector<uint8_t> v(scores, scores + sizeof(scores) / sizeof(scores[0]));
 
   SECTION("Second entry is read OK") {
+    static const uint8_t scores[] = {36, 37, 38, 39, 40};
+    const std::vector<uint8_t> v(scores, scores + sizeof(scores) / sizeof(scores[0]));
     REQUIRE(reader.HasNextEntry());
 
     auto entry2 = reader.NextEntry();
@@ -58,60 +57,71 @@ reader.NextEntry();
   }
 }
 
-// TEST_CASE("FastqReader w. OK entries with extra whitespace", "[fastq_reader]") {
-//   std::string file = "test/fastq_files/test2.fastq";
-//   FastqReader reader(file);
-//
-//   SECTION("First entry is read OK and whitespace is stripped") {
-//     REQUIRE(reader.HasNextEntry());
-//
-//     auto entry1 = reader.NextEntry();
-//     REQUIRE(entry1->name() == "1");
-//     REQUIRE(entry1->seq() == "atcgATCG");
-//
-//     REQUIRE(reader.HasNextEntry());
-//   }
-//
-//   reader.NextEntry();
-//
-//   SECTION("Second entry is read OK and whitespace is stripped") {
-//     REQUIRE(reader.HasNextEntry());
-//
-//     auto entry2 = reader.NextEntry();
-//     REQUIRE(entry2->name() == "2");
-//     REQUIRE(entry2->seq() == "atcg");
-//
-//     REQUIRE_FALSE(reader.HasNextEntry());
-//   }
-// }
-//
-// TEST_CASE("FastqReader w. OK entries with internal >", "[fastq_reader]") {
-//   std::string file = "test/fastq_files/test3.fastq";
-//   FastqReader reader(file);
-//
-//   SECTION("First entry with extra > is read OK") {
-//     REQUIRE(reader.HasNextEntry());
-//
-//     auto entry1 = reader.NextEntry();
-//     REQUIRE(entry1->name() == "1>2");
-//     REQUIRE(entry1->seq() == "AT>CG");
-//
-//     REQUIRE(reader.HasNextEntry());
-//   }
-//
-//   reader.NextEntry();
-//
-//   SECTION("Second entry with extra > is read OK") {
-//     REQUIRE(reader.HasNextEntry());
-//
-//     auto entry2 = reader.NextEntry();
-//     REQUIRE(entry2->name() == "3>4");
-//     REQUIRE(entry2->seq() == "cg>ta");
-//
-//     REQUIRE_FALSE(reader.HasNextEntry());
-//   }
-// }
-//
+TEST_CASE("FastqReader w. OK entries with extra whitespace", "[fastq_reader]") {
+  std::string file = "test/fastq_files/test2.fastq";
+  FastqReader reader(file);
+
+  SECTION("First entry is read OK") {
+    static const uint8_t scores[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+    const std::vector<uint8_t> v(scores, scores + sizeof(scores) / sizeof(scores[0]));
+
+    REQUIRE(reader.HasNextEntry());
+
+    auto entry1 = reader.NextEntry();
+    REQUIRE(entry1->name() == "test1");
+    REQUIRE(entry1->seq() == "ATCGUatcgu");
+    REQUIRE(entry1->scores() == v);
+
+    REQUIRE(reader.HasNextEntry());
+  }
+
+reader.NextEntry();
+
+  SECTION("Second entry is read OK") {
+    static const uint8_t scores[] = {36, 37, 38, 39, 40};
+    const std::vector<uint8_t> v(scores, scores + sizeof(scores) / sizeof(scores[0]));
+    REQUIRE(reader.HasNextEntry());
+
+    auto entry2 = reader.NextEntry();
+    REQUIRE(entry2->name() == "test2");
+    REQUIRE(entry2->seq() == "natcg");
+    REQUIRE(entry2->scores() == v);
+
+    REQUIRE_FALSE(reader.HasNextEntry());
+  }
+}
+
+TEST_CASE("FastqReader w. OK entries with internal >", "[fastq_reader]") {
+  std::string file = "test/fastq_files/test3.fastq";
+  FastqReader reader(file);
+
+  SECTION("First entry with extra @ is read OK") {
+    static const uint8_t scores[] = {0, 1, 2, 3, 4, 31, 5, 6, 7, 8, 9};
+    const std::vector<uint8_t> v(scores, scores + sizeof(scores) / sizeof(scores[0]));
+
+    REQUIRE(reader.HasNextEntry());
+
+    auto entry1 = reader.NextEntry();
+    REQUIRE(entry1->name() == "te@st1");
+    REQUIRE(entry1->seq() == "ATCGU@atcgu");
+    REQUIRE(entry1->scores() == v);
+
+    REQUIRE(reader.HasNextEntry());
+  }
+
+  reader.NextEntry();
+
+  SECTION("Second entry with extra @ is read OK") {
+    REQUIRE(reader.HasNextEntry());
+
+    auto entry2 = reader.NextEntry();
+    REQUIRE(entry2->name() == "te@st2");
+    REQUIRE(entry2->seq() == "na@tcg");
+
+    REQUIRE_FALSE(reader.HasNextEntry());
+  }
+}
+
 // TEST_CASE("FastqReader w. only sequence throws", "[fastq_reader]") {
 //   std::string file = "test/fastq_files/test4.fastq";
 //   FastqReader reader(file);
