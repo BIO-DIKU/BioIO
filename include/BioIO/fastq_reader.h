@@ -55,6 +55,11 @@ class FastqReaderException : public std::exception {
   const std::string exceptionMsg;
 };
 
+/**
+ * Reader for FASTQ files. Assumes that FASTQ entries are unwrapped - that is all
+ * entries consists of exactly 4 lines. Also, we assume there are no whitespace
+ * in the sequences.
+ */
 class FastqReader
 {
  public:

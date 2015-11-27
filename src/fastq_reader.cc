@@ -42,7 +42,11 @@ FastqReader::FastqReader(const std::string &file, const int encoding) :
 {}
 
 FastqReader::~FastqReader()
-{}
+{
+  delete[] name_buffer_;
+  delete[] seq_buffer_;
+  delete[] scores_buffer_;
+}
 
 std::unique_ptr<SeqEntry> FastqReader::NextEntry() {
   std::unique_ptr<SeqEntry> seq_entry(new SeqEntry());
@@ -86,15 +90,8 @@ void FastqReader::GetSeq(std::unique_ptr<SeqEntry> &seq_entry) {
   int  seq_index = 0;
   char c;
 
-  while ((c = read_buffer_.NextChar())) {
-    if (c == '+' && isendl(read_buffer_.PrevChar())) {
-      // read_buffer_.Rewind(1);
-      break;
-    }
-
-    if (isseq(c)) {
-      seq_buffer_[seq_index++] = c;
-    }
+  while ((c = read_buffer_.NextChar()) && !isendl(c)) {
+    seq_buffer_[seq_index++] = c;
   }
 
   if (!seq_index) {
@@ -109,15 +106,11 @@ void FastqReader::GetScores(std::unique_ptr<SeqEntry> &seq_entry) {
   size_t scores_index = 0;
   char c;
 
-  while ((c = read_buffer_.NextChar())) {
-    if (c == '@' && isendl(read_buffer_.PrevChar())) {
-      read_buffer_.Rewind(1);
-      break;
-    }
+  // Skip comment line.
+  while ((c = read_buffer_.NextChar()) && !isendl(c)) {}
 
-    if (isseq(c)) {
-      scores_buffer_[scores_index++] = c;
-    }
+  while ((c = read_buffer_.NextChar()) && !isendl(c)) {
+    scores_buffer_[scores_index++] = c;
   }
 
   if (!scores_index) {

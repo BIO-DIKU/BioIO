@@ -57,40 +57,6 @@ reader.NextEntry();
   }
 }
 
-TEST_CASE("FastqReader w. OK entries with extra whitespace", "[fastq_reader]") {
-  std::string file = "test/fastq_files/test2.fastq";
-  FastqReader reader(file);
-
-  SECTION("First entry is read OK") {
-    static const uint8_t scores[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
-    const std::vector<uint8_t> v(scores, scores + sizeof(scores) / sizeof(scores[0]));
-
-    REQUIRE(reader.HasNextEntry());
-
-    auto entry1 = reader.NextEntry();
-    REQUIRE(entry1->name() == "test1");
-    REQUIRE(entry1->seq() == "ATCGUatcgu");
-    REQUIRE(entry1->scores() == v);
-
-    REQUIRE(reader.HasNextEntry());
-  }
-
-reader.NextEntry();
-
-  SECTION("Second entry is read OK") {
-    static const uint8_t scores[] = {36, 37, 38, 39, 40};
-    const std::vector<uint8_t> v(scores, scores + sizeof(scores) / sizeof(scores[0]));
-    REQUIRE(reader.HasNextEntry());
-
-    auto entry2 = reader.NextEntry();
-    REQUIRE(entry2->name() == "test2");
-    REQUIRE(entry2->seq() == "natcg");
-    REQUIRE(entry2->scores() == v);
-
-    REQUIRE_FALSE(reader.HasNextEntry());
-  }
-}
-
 TEST_CASE("FastqReader w. OK entries with internal >", "[fastq_reader]") {
   std::string file = "test/fastq_files/test3.fastq";
   FastqReader reader(file);
@@ -138,38 +104,6 @@ TEST_CASE("FastqReader w/o name throws", "[fastq_reader]") {
   }
 }
 
-TEST_CASE("FastqReader w/o sequence throws", "[fastq_reader]") {
-  std::string file = "test/fastq_files/test5.fastq";
-  FastqReader reader(file);
-
-  REQUIRE(reader.HasNextEntry());
-
-  try {
-    reader.NextEntry();
-    FAIL("reader.NextEntry() did not throw expected exception");
-  }
-
-  catch (FastqReaderException& e) {
-    REQUIRE(e.exceptionMsg == "Error: missing sequence");
-  }
-}
-
-TEST_CASE("FastqReader w/o scores throws", "[fastq_reader]") {
-  std::string file = "test/fastq_files/test6.fastq";
-  FastqReader reader(file);
-
-  REQUIRE(reader.HasNextEntry());
-
-  try {
-    reader.NextEntry();
-    FAIL("reader.NextEntry() did not throw expected exception");
-  }
-
-  catch (FastqReaderException& e) {
-    REQUIRE(e.exceptionMsg == "Error: missing scores");
-  }
-}
-
 TEST_CASE("FastqReader w. missing header throws", "[fastq_reader]") {
   std::string file = "test/fastq_files/test7.fastq";
   FastqReader reader(file);
@@ -199,38 +133,6 @@ TEST_CASE("FastqReader w. empty file throws", "[fastq_reader]") {
 
   catch (FastqReaderException& e) {
     REQUIRE(e.exceptionMsg == "Error: missing sequence name");
-  }
-}
-
-TEST_CASE("FastqReader w. OK name and space only seq throws", "[fastq_reader]") {
-  std::string file = "test/fastq_files/test9.fastq";
-  FastqReader reader(file);
-
-  REQUIRE(reader.HasNextEntry());
-
-  try {
-    reader.NextEntry();
-    FAIL("reader.NextEntry() did not throw expected exception");
-  }
-
-  catch (FastqReaderException& e) {
-    REQUIRE(e.exceptionMsg == "Error: missing sequence");
-  }
-}
-
-TEST_CASE("FastqReader w. OK name and space only scores throws", "[fastq_reader]") {
-  std::string file = "test/fastq_files/test10.fastq";
-  FastqReader reader(file);
-
-  REQUIRE(reader.HasNextEntry());
-
-  try {
-    reader.NextEntry();
-    FAIL("reader.NextEntry() did not throw expected exception");
-  }
-
-  catch (FastqReaderException& e) {
-    REQUIRE(e.exceptionMsg == "Error: missing scores");
   }
 }
 
