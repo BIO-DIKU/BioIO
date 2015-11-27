@@ -29,16 +29,22 @@ TEST_CASE("FastqReader w. OK entries", "[fastq_reader]") {
   FastqReader reader(file);
 
   SECTION("First entry is read OK") {
+    static const uint8_t scores[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+    const std::vector<uint8_t> v(scores, scores + sizeof(scores) / sizeof(scores[0]));
+
     REQUIRE(reader.HasNextEntry());
 
     auto entry1 = reader.NextEntry();
     REQUIRE(entry1->name() == "test1");
     REQUIRE(entry1->seq() == "ATCGUatcgu");
+    REQUIRE(entry1->scores() == v);
 
     REQUIRE(reader.HasNextEntry());
   }
 
 reader.NextEntry();
+    static const uint8_t scores[] = {36, 37, 38, 39, 40};
+    const std::vector<uint8_t> v(scores, scores + sizeof(scores) / sizeof(scores[0]));
 
   SECTION("Second entry is read OK") {
     REQUIRE(reader.HasNextEntry());
@@ -46,6 +52,7 @@ reader.NextEntry();
     auto entry2 = reader.NextEntry();
     REQUIRE(entry2->name() == "test2");
     REQUIRE(entry2->seq() == "natcg");
+    REQUIRE(entry2->scores() == v);
 
     REQUIRE_FALSE(reader.HasNextEntry());
   }
