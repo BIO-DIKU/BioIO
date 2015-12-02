@@ -19,98 +19,79 @@
  */
 
 #include <BioIO/fasta_reader.h>
+#include <BioIO/read_buffer.h>
 
 #include <sstream>
-#include <algorithm>
 #include <iostream>
+#include <string>
 
-FastaReader::FastaReader(const std::string& file_path, int error_tolerance_flags) :
-  error_tolerance_flags_(error_tolerance_flags)
-{
-  input_stream_.open(file_path, std::ifstream::in);
-
-  if (!input_stream_.good()) {
-    std::string msg("FASTA file not found or not readable: " + file_path);
-    throw FastaException(msg, 1);
-  }
-
-  // Read until eof or the first header is located
-  while (windowsSafeGetLine(input_stream_, next_header_)) {
-    if (next_header_.empty()) continue;  // Ignore empty lines
-
-    if (next_header_.at(0) == '>') {
-      break;
-    } else if (error_tolerance_flags_ & ignore_content_before_first_header) {
-      // continue;
-    } else {
-      std::string msg("Bad FASTA format: Contents before first header. Line: \"" +
-        next_header_ + "\"");
-      throw FastaException(msg, 2);
-    }
-  }
-
-  if (next_header_.empty()) {
-    std::string msg("Bad FASTA format: No header found.");
-    throw FastaException(msg, 5);
-  }
-
-  next_header_ = next_header_.substr(1);
-}
+FastaReader::FastaReader(const std::string &file) :
+  read_buffer_(kBufferSize, file),
+  name_buffer_(new char[kMaxNameSize]),
+  seq_buffer_(new char[kMaxSeqSize])
+{}
 
 FastaReader::~FastaReader() {
-  input_stream_.close();
+  delete[] name_buffer_;
+  delete[] seq_buffer_;
 }
 
-std::unique_ptr<SeqEntry> FastaReader::nextEntry() {
-  std::unique_ptr<SeqEntry> seqPtr(new SeqEntry());
-  std::stringstream ss;
+std::unique_ptr<SeqEntry> FastaReader::NextEntry() {
+  std::unique_ptr<SeqEntry> seq_entry(new SeqEntry());
 
-  if (next_header_.empty()) {
-    std::string msg("Bad FASTA format: Empty header.");
-    throw FastaException(msg, 3);
-  }
+  GetName(seq_entry);
+  GetSeq(seq_entry);
 
-  seqPtr->name() = next_header_;
+  return seq_entry;
+}
 
-  while (windowsSafeGetLine(input_stream_, next_header_)) {
-    if (next_header_.length() == 0) continue;  // Ignore empty lines
+bool FastaReader::HasNextEntry() {
+  return !read_buffer_.Eof();
+}
 
-    if (next_header_.at(0) == '>') {
-      next_header_ = next_header_.substr(1);
-      break;
-    } else {
-      ss << next_header_;
+void FastaReader::GetName(std::unique_ptr<SeqEntry> &seq_entry) {
+  int  name_index = 0;
+  char c;
+
+  while ((c = read_buffer_.NextChar()) && (c != '>')) {
+    if (isalpha(c)) {
+      std::string msg = "Error: File not in FASTA format";
+
+      throw FastaReaderException(msg);
     }
   }
 
-  seqPtr->seq() = ss.str();
-
-  seqPtr->seq().erase(
-    std::remove_if(
-      seqPtr->seq().begin(),
-      seqPtr->seq().end(),
-      [](char ch) {
-        return std::isspace<char>(ch, std::locale::classic());
-      }), seqPtr->seq().end());
-
-  if (seqPtr->seq().empty()) {
-    std::string msg("Bad FASTA format: Missing sequence for header \"" + next_header_ + "\"");
-    throw FastaException(msg, 4);
+  while ((c = read_buffer_.NextChar()) && !isendl(c)) {
+    name_buffer_[name_index++] = c;
   }
 
-  return seqPtr;
+  if (!name_index) {
+    std::string msg = "Error: missing sequence name";
+    throw FastaReaderException(msg);
+  }
+
+  seq_entry->set_name(std::string(name_buffer_, name_index));
 }
 
-bool FastaReader::hasNextEntry() const {
-  return !input_stream_.eof();
-}
+void FastaReader::GetSeq(std::unique_ptr<SeqEntry> &seq_entry) {
+  int  seq_index = 0;
+  char c;
 
-std::istream& FastaReader::windowsSafeGetLine(std::istream& is, std::string& str) {
-  std::istream& ret = std::getline(is, str);
+  while ((c = read_buffer_.NextChar())) {
+    if (c == '>' && isendl(read_buffer_.PrevChar())) {
+      read_buffer_.Rewind(1);
+      break;
+    }
 
-  // handle evil windows line endings
-  if (str.back() == '\r')
-    next_header_.pop_back();
+    if (isseq(c)) {
+      seq_buffer_[seq_index++] = c;
+    }
+  }
 
-  return ret;
+  if (!seq_index) {
+    std::string msg = "Error: missing sequence";
+    throw FastaReaderException(msg);
+  }
+
+  seq_entry->set_seq(std::string(seq_buffer_, seq_index));
 }
