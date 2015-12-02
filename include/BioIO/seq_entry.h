@@ -78,6 +78,11 @@ class SeqEntry {
     SeqEntry SubSeq(size_t i, size_t len) const;
 
     /**
+     * Returns the size of the sequence.
+     */
+    size_t Size();
+
+    /**
      * Reverse sequence and scores.
      */
     void reverse();
