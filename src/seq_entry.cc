@@ -76,6 +76,10 @@ SeqEntry SeqEntry::SubSeq(size_t i, size_t len) const {
   }
 }
 
+size_t SeqEntry::Size() {
+  return seq_.size();
+}
+
 void SeqEntry::reverse() {
   std::reverse(seq_.begin(), seq_.end());
   std::reverse(scores_.begin(), scores_.end());

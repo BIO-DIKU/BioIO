@@ -187,3 +187,22 @@ TEST_CASE("Reverse SeqEntry", "[sequence]") {
     test_reverse(s1, s, v);
   }
 }
+
+TEST_CASE("SeqEntry.Size()", "[sequence]") {
+  SECTION("With uninitialized sequence") {
+    SeqEntry s1 = SeqEntry();
+    REQUIRE(s1.Size() == 0);
+  }
+
+  SECTION("With empty sequence") {
+    SeqEntry s2 = SeqEntry();
+    s2.set_seq("");
+    REQUIRE(s2.Size() == 0);
+  }
+
+  SECTION("With non-empty sequence") {
+    SeqEntry s3 = SeqEntry();
+    s3.set_seq("ATCG");
+    REQUIRE(s3.Size() == 4);
+  }
+}
