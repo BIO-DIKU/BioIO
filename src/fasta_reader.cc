@@ -26,9 +26,9 @@
 #include <string>
 
 FastaReader::FastaReader(const std::string &file) :
-  read_buffer_(kBufferSize, file),
-  name_buffer_(new char[kMaxNameSize]),
-  seq_buffer_(new char[kMaxSeqSize])
+  read_buffer_(FastaReader::kBufferSize, file),
+  name_buffer_(new char[FastaReader::kMaxNameSize]),
+  seq_buffer_(new char[FastaReader::kMaxSeqSize])
 {}
 
 FastaReader::~FastaReader() {

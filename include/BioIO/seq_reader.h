@@ -57,8 +57,8 @@ class SeqReaderException : public std::exception {
 
 /**
  * @brief Class for identifying the type of a given sequence file as either a
- * FASTA or FASTQ file and return a SeqReader object inheriting from FastaReader
- * or FastqReader, respectively.
+ * FASTA or FASTQ format and return a unique_ptr inheriting from FastaReader or
+ * FastqReader, respectively.
  */
 class SeqReader
 {
@@ -68,16 +68,6 @@ class SeqReader
   ~SeqReader();
 
  private:
-
-  /*
-   * Value for FASTA file type.
-   */
-  static const auto kFileTypeFasta = 1;
-
-  /*
-   * Value for FASTQ file type.
-   */
-  static const auto kFileTypeFastq = 2;
 
   /*
    * Size of custom buffer used to determine file type.
@@ -92,7 +82,7 @@ class SeqReader
   /*
    * Determine the file type and return this.
    */
-  int DetermineFileType();
+  std::unique_ptr<SeqReader> DetermineFileType();
 };
 
 #endif  // BIOIO_SEQ_READER_H_

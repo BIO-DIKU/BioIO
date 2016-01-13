@@ -28,24 +28,17 @@
 #include <string>
 
 SeqReader::SeqReader(const std::string &file) :
-  read_buffer_(kBufferSize, file)
+  read_buffer_(SeqReader::kBufferSize, file)
 {
-  /* FIXME Needs clever template programming?
-   * http://stackoverflow.com/questions/16358804/c-is-conditional-inheritance-possible
-   */
-  switch (DetermineFileType()) {
-    case kFileTypeFasta : FastaReader reader(file);
-    case kFileTypeFastq : FastqReader reader(file);
-    default :
-    std::string msg = "This should never happen";
-    throw SeqReaderException(msg);
-  }
+  DetermineFileType();
 }
 
 SeqReader::~SeqReader()
-{}
+{
+  delete[] read_buffer_;
+}
 
-int SeqReader::DetermineFileType() {
+std::unique_ptr<SeqReader> SeqReader::DetermineFileType() {
   char c;
 
   while ((c = read_buffer_.NextChar())) {
@@ -54,9 +47,9 @@ int SeqReader::DetermineFileType() {
     }
 
     if (c == '>') {
-      return kFileTypeFasta;
+      return std::unique_ptr<SeqReader> seq_reader(FastaReader reader(file));
     } else if (c == '@') {
-      return kFileTypeFastq;
+      return std::unique_ptr<SeqReader> seq_reader(FastqReader reader(file));
     } else {
       break;
     }

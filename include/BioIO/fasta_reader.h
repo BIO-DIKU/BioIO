@@ -28,26 +28,8 @@
 #include <iostream>
 
 #include <BioIO/seq_entry.h>
+#include <BioIO/seq_reader.h>
 #include <BioIO/read_buffer.h>
-
-/*
- * Size of custom buffer used to read from a FASTA file a chunk of data this size
- */
-static const auto kBufferSize  = 640 * 1024;
-
-/*
- * Size of sequence name buffer used to temporary store the sequence name while
- * parsing a FASTA file. The size of this buffer is determined by kMaxNameSize,
- * which must be larger than the longest name or undefined things will happen.
-*/
-static const auto kMaxNameSize = 1024;
-
-/*
- * Size of sequence buffer used to temporary store the sequence  while parsing
- * a FASTA file. The size of this buffer is determined by kMaxSeqSize, which
- * must be larger than the longest sequence or undefined things will happen.
- */
-static const auto kMaxSeqSize  = 300000000;
 
 /**
  * @brief Exception class for FastaReader class.
@@ -59,7 +41,8 @@ static const auto kMaxSeqSize  = 300000000;
  * @example
  *   throw FastaReaderException("Exception message");
  */
-class FastaReaderException : public std::exception {
+class FastaReaderException : public std::exception
+{
  public:
   FastaReaderException(std::string &msg) :
     exceptionMsg(msg)
@@ -74,7 +57,13 @@ class FastaReaderException : public std::exception {
   const std::string exceptionMsg;
 };
 
-class FastaReader
+/**
+ * Reader for FASTA files. FASTA entries may be wrapped and white space is
+ * stripped from sequences.
+ *
+ * Inherits from SeqReader in order to automatically determine the file format.
+ */
+class FastaReader : public SeqReader
 {
  public:
   FastaReader(const std::string &file);
@@ -92,6 +81,25 @@ class FastaReader
   bool HasNextEntry();
 
  private:
+
+  /*
+   * Size of custom buffer used to read from a FASTA file a chunk of data this size
+   */
+  static const auto kBufferSize = 640 * 1024;
+
+  /*
+   * Size of sequence name buffer used to temporary store the sequence name while
+   * parsing a FASTA file. The size of this buffer is determined by kMaxNameSize,
+   * which must be larger than the longest name or undefined things will happen.
+  */
+  static const auto kMaxNameSize = 1024;
+
+  /*
+   * Size of sequence buffer used to temporary store the sequence  while parsing
+   * a FASTA file. The size of this buffer is determined by kMaxSeqSize, which
+   * must be larger than the longest sequence or undefined things will happen.
+   */
+  static const auto kMaxSeqSize = 300000000;
 
   ReadBuffer read_buffer_;
 

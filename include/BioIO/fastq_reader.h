@@ -28,6 +28,7 @@
 #include <iostream>
 
 #include <BioIO/seq_entry.h>
+#include <BioIO/seq_reader.h>
 #include <BioIO/read_buffer.h>
 
 /**
@@ -40,7 +41,8 @@
  * @example
  *   throw FastqReaderException("Exception message");
  */
-class FastqReaderException : public std::exception {
+class FastqReaderException : public std::exception
+{
  public:
   FastqReaderException(std::string &msg) :
     exceptionMsg(msg)
@@ -59,8 +61,10 @@ class FastqReaderException : public std::exception {
  * Reader for FASTQ files. Assumes that FASTQ entries are unwrapped - that is all
  * entries consists of exactly 4 lines. Also, we assume there are no whitespace
  * in the sequences.
+ *
+ * Inherits from SeqReader in order to automatically determine the file format.
  */
-class FastqReader
+class FastqReader : public SeqReader
 {
  public:
   FastqReader(const std::string &file);
@@ -87,7 +91,7 @@ class FastqReader
   /*
    * Size of custom buffer used to read from a FASTQ file a chunk of data this size
    */
-  static const auto kBufferSize  = 640 * 1024;
+  static const auto kBufferSize = 640 * 1024;
 
   /*
    * Size of sequence name buffer used to temporary store the sequence name while
