@@ -60,14 +60,14 @@ TEST_CASE("SeqReader with FASTQ file", "[seq_reader]") {
 }
 
 TEST_CASE("SeqReader with bad file format", "[seq_reader]") {
-  string file = "temp_file";
+  std::string file = "temp_file";
 
   remove(file.c_str());
 
-  ofstream output;
+  std::ofstream output;
   output.open(file);
-  output << " " << endl;
-  output << " A" << endl;
+  output << " " << std::endl;
+  output << " A" << std::endl;
   output.close();
 
   SECTION("Throws exception") {

@@ -26,6 +26,7 @@
 #include <string>
 
 FastqReader::FastqReader(const std::string &file) :
+  SeqReader(file),
   read_buffer_(FastqReader::kBufferSize, file),
   encoding_(kDefaultEncoding),
   name_buffer_(new char[FastqReader::kMaxNameSize]),
@@ -34,6 +35,7 @@ FastqReader::FastqReader(const std::string &file) :
 {}
 
 FastqReader::FastqReader(const std::string &file, const int encoding) :
+  SeqReader(file),
   read_buffer_(FastqReader::kBufferSize, file),
   encoding_(encoding),
   name_buffer_(new char[FastqReader::kMaxNameSize]),

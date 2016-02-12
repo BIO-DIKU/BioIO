@@ -21,24 +21,21 @@
 #include <BioIO/seq_reader.h>
 #include <BioIO/fasta_reader.h>
 #include <BioIO/fastq_reader.h>
-#include <BioIO/read_buffer.h>
 
 #include <sstream>
-#include <iostream>
-#include <string>
 
 SeqReader::SeqReader(const std::string &file) :
   read_buffer_(SeqReader::kBufferSize, file)
 {
-  DetermineFileType();
+  DetermineFileType(file);
 }
 
 SeqReader::~SeqReader()
 {
-  delete[] read_buffer_;
+  //delete read_buffer_; //This happens automatically when its not a raw pointer
 }
 
-std::unique_ptr<SeqReader> SeqReader::DetermineFileType() {
+std::unique_ptr<SeqReader> SeqReader::DetermineFileType(const std::string &file) {
   char c;
 
   while ((c = read_buffer_.NextChar())) {
@@ -47,9 +44,9 @@ std::unique_ptr<SeqReader> SeqReader::DetermineFileType() {
     }
 
     if (c == '>') {
-      return std::unique_ptr<SeqReader> seq_reader(FastaReader reader(file));
+      return std::unique_ptr<SeqReader>(new FastaReader(file));
     } else if (c == '@') {
-      return std::unique_ptr<SeqReader> seq_reader(FastqReader reader(file));
+      return std::unique_ptr<SeqReader>(new FastqReader(file));
     } else {
       break;
     }

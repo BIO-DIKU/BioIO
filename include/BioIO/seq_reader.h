@@ -67,6 +67,8 @@ class SeqReader
 
   ~SeqReader();
 
+  virtual bool HasNextEntry() = 0;
+
  private:
 
   /*
@@ -82,7 +84,7 @@ class SeqReader
   /*
    * Determine the file type and return this.
    */
-  std::unique_ptr<SeqReader> DetermineFileType();
+  std::unique_ptr<SeqReader> DetermineFileType(const std::string &file);
 };
 
 #endif  // BIOIO_SEQ_READER_H_
