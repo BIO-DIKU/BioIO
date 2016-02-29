@@ -26,8 +26,13 @@
 #include <string>
 
 FastaReader::FastaReader(const std::string &file) :
-  SeqReader(file),
-  read_buffer_(FastaReader::kBufferSize, file),
+    SeqReader(file),
+    name_buffer_(new char[FastaReader::kMaxNameSize]),
+    seq_buffer_(new char[FastaReader::kMaxSeqSize])
+{}
+
+FastaReader::FastaReader(std::unique_ptr<ReadBuffer>& read_buffer) :
+  SeqReader(read_buffer),
   name_buffer_(new char[FastaReader::kMaxNameSize]),
   seq_buffer_(new char[FastaReader::kMaxSeqSize])
 {}
@@ -47,14 +52,14 @@ std::unique_ptr<SeqEntry> FastaReader::NextEntry() {
 }
 
 bool FastaReader::HasNextEntry() {
-  return !read_buffer_.Eof();
+  return !read_buffer_->Eof();
 }
 
 void FastaReader::GetName(std::unique_ptr<SeqEntry> &seq_entry) {
   int  name_index = 0;
   char c;
 
-  while ((c = read_buffer_.NextChar()) && (c != '>')) {
+  while ((c = read_buffer_->NextChar()) && (c != '>')) {
     if (isalpha(c)) {
       std::string msg = "Error: File not in FASTA format";
 
@@ -62,7 +67,7 @@ void FastaReader::GetName(std::unique_ptr<SeqEntry> &seq_entry) {
     }
   }
 
-  while ((c = read_buffer_.NextChar()) && !isendl(c)) {
+  while ((c = read_buffer_->NextChar()) && !isendl(c)) {
     name_buffer_[name_index++] = c;
   }
 
@@ -78,9 +83,9 @@ void FastaReader::GetSeq(std::unique_ptr<SeqEntry> &seq_entry) {
   int  seq_index = 0;
   char c;
 
-  while ((c = read_buffer_.NextChar())) {
-    if (c == '>' && isendl(read_buffer_.PrevChar())) {
-      read_buffer_.Rewind(1);
+  while ((c = read_buffer_->NextChar())) {
+    if (c == '>' && isendl(read_buffer_->PrevChar())) {
+      read_buffer_->Rewind(1);
       break;
     }
 

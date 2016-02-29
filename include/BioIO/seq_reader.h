@@ -63,11 +63,25 @@ class SeqReaderException : public std::exception {
 class SeqReader
 {
  public:
-  SeqReader(const std::string &file);
-
-  ~SeqReader();
+  SeqReader(const std::string& file);
+  SeqReader(std::unique_ptr<ReadBuffer>& read_buffer);
 
   virtual bool HasNextEntry() = 0;
+  virtual std::unique_ptr<SeqEntry> NextEntry() = 0;
+
+  /*
+   * Create a SeqReader that parses the specified file. 
+   * The type of SeqReader (FastaReader or FastQReader) is determined using the 
+   * first printable symbol in the file ('>' for FASTA and '@' for FASTQ).
+   */
+  static std::unique_ptr<SeqReader> CreateReader(const std::string &file);
+
+ protected:
+
+  /*
+   * File read buffer.
+   */
+  std::unique_ptr<ReadBuffer> read_buffer_;
 
  private:
 
@@ -76,15 +90,6 @@ class SeqReader
    */
   static const auto kBufferSize = 640 * 1024;
 
-  /*
-   * File read buffer.
-   */
-  ReadBuffer read_buffer_;
-
-  /*
-   * Determine the file type and return this.
-   */
-  std::unique_ptr<SeqReader> DetermineFileType(const std::string &file);
 };
 
 #endif  // BIOIO_SEQ_READER_H_

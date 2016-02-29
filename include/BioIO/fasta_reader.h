@@ -67,6 +67,7 @@ class FastaReader : public SeqReader
 {
  public:
   FastaReader(const std::string &file);
+  FastaReader(std::unique_ptr<ReadBuffer>& read_buffer);
 
   ~FastaReader();
 
@@ -100,8 +101,6 @@ class FastaReader : public SeqReader
    * must be larger than the longest sequence or undefined things will happen.
    */
   static const auto kMaxSeqSize = 300000000;
-
-  ReadBuffer read_buffer_;
 
   /*
    * Temporary buffer for collecting a read name.

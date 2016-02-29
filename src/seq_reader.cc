@@ -23,30 +23,31 @@
 #include <BioIO/fastq_reader.h>
 
 #include <sstream>
+#include <memory>
 
-SeqReader::SeqReader(const std::string &file) :
-  read_buffer_(SeqReader::kBufferSize, file)
+SeqReader::SeqReader(const std::string& file) :
+    read_buffer_(new ReadBuffer(SeqReader::kBufferSize ,file))
 {
-  DetermineFileType(file);
 }
 
-SeqReader::~SeqReader()
+SeqReader::SeqReader(std::unique_ptr<ReadBuffer>& read_buffer) :
+  read_buffer_(std::move(read_buffer))
 {
-  //delete read_buffer_; //This happens automatically when its not a raw pointer
 }
 
-std::unique_ptr<SeqReader> SeqReader::DetermineFileType(const std::string &file) {
+std::unique_ptr<SeqReader> SeqReader::CreateReader(const std::string &file) {
   char c;
+  std::unique_ptr<ReadBuffer> read_buffer(new ReadBuffer(SeqReader::kBufferSize, file));
 
-  while ((c = read_buffer_.NextChar())) {
+  while ((c = read_buffer->NextChar())) {
     if (!isalpha(c)) {
       continue;
     }
 
     if (c == '>') {
-      return std::unique_ptr<SeqReader>(new FastaReader(file));
+      return std::unique_ptr<SeqReader>(new FastaReader(read_buffer));
     } else if (c == '@') {
-      return std::unique_ptr<SeqReader>(new FastqReader(file));
+      return std::unique_ptr<SeqReader>(new FastqReader(read_buffer));
     } else {
       break;
     }

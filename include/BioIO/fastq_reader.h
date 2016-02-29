@@ -67,8 +67,8 @@ class FastqReaderException : public std::exception
 class FastqReader : public SeqReader
 {
  public:
-  FastqReader(const std::string &file);
-  FastqReader(const std::string &file, const int encoding);
+  FastqReader(const std::string &file, const int encoding=kDefaultEncoding);
+  FastqReader(std::unique_ptr<ReadBuffer>& read_buffer);
 
   ~FastqReader();
 
@@ -113,11 +113,6 @@ class FastqReader : public SeqReader
    * must be larger than the longest sequence or undefined things will happen.
    */
   static const auto kMaxScoresSize = 4096;
-
-  /*
-   * Temporary file reading buffer.
-   */
-  ReadBuffer read_buffer_;
 
   /*
    * FASTQ score encoding.

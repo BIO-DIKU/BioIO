@@ -26,36 +26,36 @@
 TEST_CASE("SeqReader with FASTA file", "[seq_reader]") {
   std::string file = "test/fasta_files/test1.fasta";
 
-  SeqReader reader(file);
+  auto reader = SeqReader::CreateReader(file);
 
   SECTION("First entry is read OK") {
-    REQUIRE(reader.HasNextEntry());
+    REQUIRE(reader->HasNextEntry());
 
-    auto entry1 = reader.NextEntry();
+    auto entry1 = reader->NextEntry();
     REQUIRE(entry1->name() == "1 K#Bacteria;P#Proteobacteria");
     REQUIRE(entry1->seq() == "ATCGUatcgu");
 
-    REQUIRE(reader.HasNextEntry());
+    REQUIRE(reader->HasNextEntry());
   }
 }
 
 TEST_CASE("SeqReader with FASTQ file", "[seq_reader]") {
   std::string file = "test/fastq_files/test1.fastq";
 
-  SeqReader reader(file);
+  auto reader = SeqReader::CreateReader(file);
 
   SECTION("First entry is read OK") {
     static const uint8_t scores[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
     const std::vector<uint8_t> v(scores, scores + sizeof(scores) / sizeof(scores[0]));
 
-    REQUIRE(reader.HasNextEntry());
+    REQUIRE(reader->HasNextEntry());
 
-    auto entry1 = reader.NextEntry();
+    auto entry1 = reader->NextEntry();
     REQUIRE(entry1->name() == "test1");
     REQUIRE(entry1->seq() == "ATCGUatcgu");
     REQUIRE(entry1->scores() == v);
 
-    REQUIRE(reader.HasNextEntry());
+    REQUIRE(reader->HasNextEntry());
   }
 }
 
@@ -72,7 +72,7 @@ TEST_CASE("SeqReader with bad file format", "[seq_reader]") {
 
   SECTION("Throws exception") {
     try {
-      SeqReader reader(file);
+      auto reader = SeqReader::CreateReader(file);
       FAIL("SeqReader constructor did not throw expected exception");
     }
 

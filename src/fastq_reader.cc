@@ -25,22 +25,20 @@
 #include <iostream>
 #include <string>
 
-FastqReader::FastqReader(const std::string &file) :
+FastqReader::FastqReader(const std::string &file, const int encoding) :
   SeqReader(file),
-  read_buffer_(FastqReader::kBufferSize, file),
-  encoding_(kDefaultEncoding),
+  encoding_(encoding),
   name_buffer_(new char[FastqReader::kMaxNameSize]),
   seq_buffer_(new char[FastqReader::kMaxSeqSize]),
   scores_buffer_(new char[FastqReader::kMaxScoresSize])
 {}
 
-FastqReader::FastqReader(const std::string &file, const int encoding) :
-  SeqReader(file),
-  read_buffer_(FastqReader::kBufferSize, file),
-  encoding_(encoding),
-  name_buffer_(new char[FastqReader::kMaxNameSize]),
-  seq_buffer_(new char[FastqReader::kMaxSeqSize]),
-  scores_buffer_(new char[FastqReader::kMaxScoresSize])
+FastqReader::FastqReader(std::unique_ptr<ReadBuffer>& read_buffer) :
+    SeqReader(read_buffer),
+    encoding_(kDefaultEncoding),
+    name_buffer_(new char[FastqReader::kMaxNameSize]),
+    seq_buffer_(new char[FastqReader::kMaxSeqSize]),
+    scores_buffer_(new char[FastqReader::kMaxScoresSize])
 {}
 
 FastqReader::~FastqReader()
@@ -61,14 +59,14 @@ std::unique_ptr<SeqEntry> FastqReader::NextEntry() {
 }
 
 bool FastqReader::HasNextEntry() {
-  return !read_buffer_.Eof();
+  return !read_buffer_->Eof();
 }
 
 void FastqReader::GetName(std::unique_ptr<SeqEntry> &seq_entry) {
   int  name_index = 0;
   char c;
 
-  while ((c = read_buffer_.NextChar()) && (c != '@')) {
+  while ((c = read_buffer_->NextChar()) && (c != '@')) {
     if (isalpha(c)) {
       std::string msg = "Error: File not in FASTQ format";
 
@@ -76,7 +74,7 @@ void FastqReader::GetName(std::unique_ptr<SeqEntry> &seq_entry) {
     }
   }
 
-  while ((c = read_buffer_.NextChar()) && !isendl(c)) {
+  while ((c = read_buffer_->NextChar()) && !isendl(c)) {
     name_buffer_[name_index++] = c;
   }
 
@@ -92,7 +90,7 @@ void FastqReader::GetSeq(std::unique_ptr<SeqEntry> &seq_entry) {
   int  seq_index = 0;
   char c;
 
-  while ((c = read_buffer_.NextChar()) && !isendl(c)) {
+  while ((c = read_buffer_->NextChar()) && !isendl(c)) {
     seq_buffer_[seq_index++] = c;
   }
 
@@ -109,9 +107,9 @@ void FastqReader::GetScores(std::unique_ptr<SeqEntry> &seq_entry) {
   char c;
 
   // Skip comment line.
-  while ((c = read_buffer_.NextChar()) && !isendl(c)) {}
+  while ((c = read_buffer_->NextChar()) && !isendl(c)) {}
 
-  while ((c = read_buffer_.NextChar()) && !isendl(c)) {
+  while ((c = read_buffer_->NextChar()) && !isendl(c)) {
     scores_buffer_[scores_index++] = c;
   }
 
