@@ -26,7 +26,7 @@
 #include <memory>
 
 SeqReader::SeqReader(const std::string& file) :
-    read_buffer_(new ReadBuffer(SeqReader::kBufferSize ,file))
+  read_buffer_(new ReadBuffer(SeqReader::kBufferSize, file))
 {
 }
 
@@ -55,7 +55,7 @@ std::unique_ptr<SeqReader> SeqReader::CreateReader(const std::string &file) {
     }
   }
 
-  std::string msg = "Error: File not in FASTA or FASTQ format";
+  std::string msg = "Error: File \'" + file + "\' not in FASTA or FASTQ format";
 
   throw SeqReaderException(msg);
 }

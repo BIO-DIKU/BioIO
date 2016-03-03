@@ -77,7 +77,7 @@ TEST_CASE("SeqReader with bad file format", "[seq_reader]") {
     }
 
     catch (SeqReaderException& e) {
-      REQUIRE(e.exceptionMsg == "Error: File not in FASTA or FASTQ format");
+      REQUIRE(e.exceptionMsg == "Error: File 'temp_file' not in FASTA or FASTQ format");
     }
   }
 
