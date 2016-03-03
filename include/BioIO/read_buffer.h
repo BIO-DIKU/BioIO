@@ -68,6 +68,11 @@ class ReadBuffer
   char PrevChar();
 
   /*
+   * Rewind the ReadBuffer to the beginning.
+   */
+  void Reset();
+
+  /*
    * Rewind the ReadBuffer with len chars.
    */
   void Rewind(size_t len);

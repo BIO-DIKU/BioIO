@@ -44,6 +44,8 @@ std::unique_ptr<SeqReader> SeqReader::CreateReader(const std::string &file) {
       continue;
     }
 
+    read_buffer->Reset();
+
     if (c == '>') {
       return std::unique_ptr<SeqReader>(new FastaReader(read_buffer));
     } else if (c == '@') {

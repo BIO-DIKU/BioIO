@@ -74,6 +74,10 @@ char ReadBuffer::PrevChar() {
   return buffer_[buffer_pos_ - 2];
 }
 
+void ReadBuffer::Reset() {
+  Rewind(buffer_pos_);
+}
+
 void ReadBuffer::Rewind(size_t len) {
   buffer_pos_ -= len;
   file_size_  += len;
