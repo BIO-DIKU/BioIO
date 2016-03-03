@@ -58,10 +58,11 @@ target_link_libraries("${PROJECT_NAME}-test" ${PROJECT_NAME})
 
 # Copy fasta test files to build folder
 # ------------------------
-set(MY_TEST_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/fasta_test_files")
-file(MAKE_DIRECTORY ${MY_TEST_DIRECTORY})
-file(GLOB FAST_TEST_FILES test/fasta_files/*.fasta)
-file(COPY ${FAST_TEST_FILES} DESTINATION ${MY_TEST_DIRECTORY})
+#set(MY_TEST_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/test")
+#file(MAKE_DIRECTORY ${MY_TEST_DIRECTORY})
+#file(GLOB FAST_TEST_FILES test/fasta_files/*.fasta)
+#file(COPY ${FAST_TEST_FILES} DESTINATION ${MY_TEST_DIRECTORY})
+file(COPY ${CMAKE_SOURCE_DIR}/test DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
 
 # make build types
